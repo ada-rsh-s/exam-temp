@@ -50,8 +50,8 @@ function shuffleArray(arr) {
 const deptStrength = {
   CS: 121,
   AD: 60,
-  ECE: 40,
-  ME: 60,
+  ECE: 120,
+  ME: 30,
   CE: 60,
 };
 
@@ -83,6 +83,7 @@ function dataArrayMaker(examToday, exams, deptStrength) {
     }
     resultArray[exam] = subArray;
   });
+  console.log(resultArray);
 
   // Calculating the length of data array
   let dataLen = 0;
@@ -200,12 +201,6 @@ for (const [dept, num] of data) {
   subjectAllotedNum++;
 }
 
-classes.forEach((cls, idx) => {
-  console.log(`\nClass ${idx + 1}\n`);
-  cls.forEach((row) => {
-    console.log(row);
-  });
-});
 
 const App = () => {
 
