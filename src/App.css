@@ -7,19 +7,56 @@
   margin-bottom: 20px;
 }
 
+.class-wrapper {
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding-bottom: 10px;
+}
+
 .class-row {
   display: flex;
-  flex-wrap: wrap; /* Allow wrapping */
   gap: 10px; /* Adjust the gap between seats */
 }
 
 .class-seat {
-  border: 1px solid #ccc;
+  border: 1px solid;
   padding: 20px;
-  flex: 1;
+  min-width: 100px; /* Set a minimum width for each seat */
   text-align: center;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
+/* Optional: Adjust the gap between every 2nd column */
 .class-row > :nth-child(2n) {
-  margin-right: 120px; /* Space after every 2nd column */
+  margin-right: 20px; /* Adjust as needed */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: left;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid ;
+}
+
+th {
+  font-weight: bold;
+}
+
+td {
+  padding: 5px 15px;
+  vertical-align: top;
+}
+
+td[colspan] {
+  text-align: center;
+  font-weight: bold;
+}
+
+td, th {
+  border-right: 2px solid #fff; /* Adjust color and width as needed */
 }

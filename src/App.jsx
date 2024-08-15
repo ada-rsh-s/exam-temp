@@ -1,19 +1,132 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./App.css";
-const no_classes = 25,
+const 
+  classCapacity = {
+    EAB415: [15, 10],
+    EAB416: [15, 10],
+    WAB412: [15, 10],
+    EAB310: [10, 4],
+    EAB304: [10, 4],
+    EAB310: [10, 4],
+    EAB350: [10, 4],
+    EAB311: [10, 4],
+    EAB320: [10, 4],
+    EAB316: [10, 4],
+    EAB308: [10, 4],
+  };
+let class_index = 0,
   classes = [],
-  classno = [];
-let class_index = 0;
+  lastIndex = 0,
+  data = [];
 
-for (; class_index < 2; class_index++) {
-  classes[class_index] = Array(5)
+const deptStrength = {
+  CS: 121,
+  AD: 60,
+  ECE:40,
+  ME: 130,
+  CE: 60,
+  PE: 30,
+  RE: 120,
+};
+const exams = {
+  CS: ["CS1", "CS7"],
+  AD: ["AD1","AD2"],
+  ECE: ["ECE4", "ECE9"],
+  ME: ["ME3", "ME8"],
+  CE: ["CE6", "CE8", "CE10"],
+  PE: ["PE2", "PE4"],
+  RE: ["PE2", "RE5"],
+};
+
+const slots = {
+  A: ["CS1", "ME3", "PE2","RE5"],
+  B: ["ECE4", "RE3"],
+  C: ["PE2", "CS7", "CE8", "RE5"],
+  D: ["ME8", "ECE9", "CE10"],
+  E: ["AD9"],
+  F: ["PE4", "RE3", "CS5"],
+  G: ["RE5", "CS7", "ME3", "CE6", "ECE4"],
+};
+const examToday = slots.G;
+
+const classNames = Object.keys(classCapacity);
+
+for (let i = 0; i < classNames.length; i++) {
+  const [rows, cols] = classCapacity[classNames[i]];
+  classes[i] = Array(rows)
     .fill()
-    .map(() => Array(8).fill(0));
+    .map(() => Array(cols).fill(0));
 }
-for (; class_index < no_classes; class_index++) {
-  classes[class_index] = Array(5)
-    .fill()
-    .map(() => Array(4).fill(0));
+
+function strengthCalculator(n, data) {
+  let strength = 0;
+  for (let i = n; i < data.length; i += 2) {
+    strength += data[i][1];
+  }
+
+  return strength;
+}
+
+function optimizer(resultArray, n) {
+  for (const key in resultArray) {
+    const subArray = resultArray[key];
+    if (subArray.length > n && n == 1) {
+      continue;
+    }
+    const evenStrength = strengthCalculator(0, data);
+    const oddStrength = strengthCalculator(1, data);
+    if (subArray.length >= n) {
+      let sub;
+      if (n === 1) {
+        sub = [subArray[0]];
+      } else {
+        sub = [subArray[0], ["DUM", 0], subArray[1]];
+        if (subArray.length > n) {
+          for (j = 2; j < subArray.length; j++) {
+            sub = sub.concat(["DUM", 0], subArray[j]);
+          }
+        }
+      }
+      if (evenStrength > oddStrength) {
+        if (lastIndex % 2 !== 0) {
+          data = data.concat(sub);
+          lastIndex++;
+        } else {
+          data = data.concat([["DUM", 0]], sub);
+        }
+      } else {
+        if (lastIndex % 2 === 0) {
+          data = data.concat(sub);
+          lastIndex++;
+        } else {
+          data = data.concat([["DUM", 0]], sub);
+        }
+      }
+    }
+  }
+}
+
+function dataArrayMaker(examToday, exams, deptStrength) {
+  const resultArray = {};
+  const deptList = Object.keys(exams);
+  const subList = Object.values(exams);
+
+  examToday.forEach((exam) => {
+    let subArray = [];
+    deptList.forEach((dept, index) => {
+      if (subList[index].includes(exam)) {
+        const num = deptStrength[dept];
+        subArray.push([dept, num]);
+      }
+    });
+    resultArray[exam] = subArray;
+  });
+
+  optimizer(resultArray, 2);
+
+  optimizer(resultArray, 1);
+
+  return data;
 }
 
 function shuffleEvenOddIndices(array) {
@@ -47,75 +160,9 @@ function shuffleArray(arr) {
   }
 }
 
-const deptStrength = {
-  CS: 121,
-  AD: 60,
-  ECE: 120,
-  ME: 30,
-  CE: 60,
-};
+data = dataArrayMaker(examToday, exams, deptStrength);
 
-const exams = {
-  CS: ["CS1", "CS2"],
-  AD: ["CS1", "AD2"],
-  ECE: ["ECE1", "ME1"],
-  ME: ["ME1"],
-  CE: ["CE1", "CE2", "CE3"],
-};
-
-const examToday = ["CS1", "ME1", "CE1"];
-
-function dataArrayMaker(examToday, exams, deptStrength) {
-  let resultArray = {};
-
-  let deptList = Object.keys(exams);
-  let subList = Object.values(exams);
-  let deptCnt = deptList.length;
-
-  // Building resultArray
-  examToday.forEach((exam) => {
-    let subArray = [];
-    for (let j = 0; j < deptCnt; j++) {
-      if (subList[j].includes(exam)) {
-        let num = deptStrength[deptList[j]];
-        subArray.push([deptList[j], num]);
-      }
-    }
-    resultArray[exam] = subArray;
-  });
-  console.log(resultArray);
-
-  // Calculating the length of data array
-  let dataLen = 0;
-  for (let exam in resultArray) {
-    dataLen += resultArray[exam].length;
-  }
-
-  let data = new Array(dataLen).fill(0);
-
-  // Filling the data array
-  for (let exam in resultArray) {
-    let dataIndex = 0;
-    for (let k = 0; k < dataLen; k++) {
-      if (data[k] === 0) {
-        dataIndex = k;
-        break;
-      }
-    }
-    resultArray[exam].forEach((item) => {
-      if (dataIndex < dataLen) {
-        data[dataIndex] = item;
-        dataIndex += 2;
-      }
-    });
-  }
-
-  return data;
-}
-
-const data = dataArrayMaker(examToday, exams, deptStrength);
 shuffleEvenOddIndices(data);
-console.log(data);
 
 let evenBenchIndex = 0;
 let oddBenchIndex = 1;
@@ -134,9 +181,10 @@ const seatArr = (n, sub, b1) => {
 
   for (let Class = classIndex; Class < classes.length; Class++) {
     const currentClass = classes[Class];
+
     for (let j = benchIndex; j < currentClass[0].length; j += 2) {
       for (let i = rowIndex; i < currentClass.length; i++) {
-        currentClass[i][j] = `${sub} ${num}`;
+        currentClass[i][j] = `${sub}${num}`;
         if (num === n) {
           if (i === currentClass.length - 1 && b1 % 2 === 0) {
             evenRowIndex = 0;
@@ -201,15 +249,52 @@ for (const [dept, num] of data) {
   subjectAllotedNum++;
 }
 
+const consolidateItems = (items) => {
+  const groupedItems = {};
+
+  items.forEach((item) => {
+    if (item != 0) {
+      const [prefix, num] = item.match(/^([A-Z]+)(\d+)$/).slice(1);
+      if (!groupedItems[prefix]) groupedItems[prefix] = [];
+      groupedItems[prefix].push(Number(num));
+    }
+  });
+
+  return Object.entries(groupedItems).flatMap(([prefix, nums]) => {
+    nums.sort((a, b) => a - b);
+    const first = `${prefix}${nums[0]}`;
+    const last = `${prefix}${nums[nums.length - 1]}`;
+    return [first, last];
+  });
+};
+
+const result = classes.map((cls, idx) => {
+  const allItems = cls.flat();
+
+  return {
+    class: classNames[idx],
+    items: consolidateItems(allItems),
+  };
+});
+const createItemPairs = (items) => {
+  const pairs = [];
+  for (let i = 0; i < items.length - 1; i += 2) {
+    if (i + 1 < items.length) {
+      pairs.push(`${items[i]} - ${items[i + 1]}`);
+    }
+  }
+  return pairs;
+};
+console.log(strengthCalculator(0, data)-strengthCalculator(1, data));
+
 
 const App = () => {
-
   return (
     <div className="App">
       <h1>Class Seating Arrangement</h1>
       {classes.map((cls, idx) => (
         <div key={idx} className="class-section">
-          <h2>Class {idx + 1}</h2>
+          <h2>{classNames[idx]}</h2>
           {cls.map((row, rowIndex) => (
             <div key={rowIndex} className="class-row">
               {row.map((seat, seatIndex) => (
@@ -221,6 +306,35 @@ const App = () => {
           ))}
         </div>
       ))}
+
+      <table className="custom-table">
+        <thead>
+          <tr>
+            <th>Class</th>
+            <th>Register No</th>
+          </tr>
+        </thead>
+        <tbody>
+          {result.map(({ class: className, items }, classIndex) => {
+            const pairs = createItemPairs(items);
+            const rowSpan = pairs.length || 1;
+
+            return pairs.length > 0 ? (
+              pairs.map((pair, pairIndex) => (
+                <tr key={`${className}-${pairIndex}`}>
+                  {pairIndex === 0 && <td rowSpan={rowSpan}>{className}</td>}
+                  <td>{pair}</td>
+                </tr>
+              ))
+            ) : (
+              <tr key={classIndex}>
+                <td>{className}</td>
+                <td>EMPTY</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
