@@ -30,7 +30,7 @@ const deptStrength = {
 };
 const exams = {
   CS: ["CS1", "CS7"],
-  AD: ["AD1","AD2"],
+  AD: ["CS1","AD2"],
   ECE: ["ECE4", "ECE9"],
   ME: ["ME3", "ME8"],
   CE: ["CE6", "CE8", "CE10"],
@@ -47,7 +47,7 @@ const slots = {
   F: ["PE4", "RE3", "CS5"],
   G: ["RE5", "CS7", "ME3", "CE6", "ECE4"],
 };
-const examToday = slots.G;
+const examToday = slots.A;
 
 const classNames = Object.keys(classCapacity);
 
@@ -105,7 +105,7 @@ function optimizer(resultArray, n) {
     }
   }
 }
-
+let viewResultArray = {};
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
   const deptList = Object.keys(exams);
@@ -121,6 +121,9 @@ function dataArrayMaker(examToday, exams, deptStrength) {
     });
     resultArray[exam] = subArray;
   });
+  viewResultArray = resultArray;
+  
+console.log(viewResultArray);
 
   optimizer(resultArray, 2);
 
@@ -285,13 +288,52 @@ const createItemPairs = (items) => {
   }
   return pairs;
 };
-console.log(strengthCalculator(0, data)-strengthCalculator(1, data));
 
+  const getDepartmentDetails = (departments) => {
+    const deptStrengthMap = new Map();
+
+    departments.forEach(([department, strength]) => {
+      if (!deptStrengthMap.has(department)) {
+        deptStrengthMap.set(department, strength);
+      } else {
+        deptStrengthMap.set(
+          department,
+          deptStrengthMap.get(department) + strength
+        );
+      }
+    });
+
+    return Array.from(deptStrengthMap.entries())
+      .map(([dept, strength]) => `${dept}: ${strength}`)
+      .join(", ");
+  };
 
 const App = () => {
   return (
     <div className="App">
-      <h1>Class Seating Arrangement</h1>
+      <h1>Exam Seating Arrangement</h1>
+      <div>
+        <h3 style={{ color: "lightgreen" }}>
+          Today's Exams - {examToday.join(", ")}
+        </h3>
+        <h></h>
+      </div>
+
+      <div >
+        <ul>
+          {Object.entries(viewResultArray).map(([subject, departments]) => (
+            <li style={{fontWeight:"600"}} key={subject}>
+              {subject} writing by {getDepartmentDetails(departments)}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3 style={{ color: "lightgreen" }}>
+          Neighbouring Seats left empty -{" "}
+          {Math.abs(strengthCalculator(0, data) - strengthCalculator(1, data))}
+        </h3>
+      </div>
       {classes.map((cls, idx) => (
         <div key={idx} className="class-section">
           <h2>{classNames[idx]}</h2>
