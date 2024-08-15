@@ -23,7 +23,7 @@ const deptStrength = {
   CS: 121,
   AD: 60,
   ECE:40,
-  ME: 130,
+  ME: 120,
   CE: 60,
   PE: 30,
   RE: 120,
@@ -39,7 +39,7 @@ const exams = {
 };
 
 const slots = {
-  A: ["CS1", "ME3", "PE2","RE5"],
+  A: ["CS1", "ME3", "PE2","CE6"],
   B: ["ECE4", "RE3"],
   C: ["PE2", "CS7", "CE8", "RE5"],
   D: ["ME8", "ECE9", "CE10"],
@@ -319,10 +319,10 @@ const App = () => {
         <h></h>
       </div>
 
-      <div >
+      <div>
         <ul>
           {Object.entries(viewResultArray).map(([subject, departments]) => (
-            <li style={{fontWeight:"600"}} key={subject}>
+            <li style={{ fontWeight: "600" }} key={subject}>
               {subject} writing by {getDepartmentDetails(departments)}
             </li>
           ))}
@@ -334,21 +334,6 @@ const App = () => {
           {Math.abs(strengthCalculator(0, data) - strengthCalculator(1, data))}
         </h3>
       </div>
-      {classes.map((cls, idx) => (
-        <div key={idx} className="class-section">
-          <h2>{classNames[idx]}</h2>
-          {cls.map((row, rowIndex) => (
-            <div key={rowIndex} className="class-row">
-              {row.map((seat, seatIndex) => (
-                <div key={seatIndex} className="class-seat">
-                  {seat || "Empty"}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      ))}
-
       <table className="custom-table">
         <thead>
           <tr>
@@ -377,6 +362,21 @@ const App = () => {
           })}
         </tbody>
       </table>
+
+      {classes.map((cls, idx) => (
+        <div key={idx} className="class-section">
+          <h2>{classNames[idx]}</h2>
+          {cls.map((row, rowIndex) => (
+            <div key={rowIndex} className="class-row">
+              {row.map((seat, seatIndex) => (
+                <div key={seatIndex} className="class-seat">
+                  {seat || "Empty"}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 };
