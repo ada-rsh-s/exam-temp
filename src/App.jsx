@@ -83,7 +83,7 @@ function optimizer(resultArray, n) {
         sub = [subArray[0], ["DUM", 0], subArray[1]];
         if (subArray.length > n) {
           for (j = 2; j < subArray.length; j++) {
-            sub = sub.concat(["DUM", 0], subArray[j]);
+            sub = sub.concat([["DUM", 0], subArray[j]]);
           }
         }
       }
