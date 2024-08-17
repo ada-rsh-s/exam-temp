@@ -1,10 +1,10 @@
 import React from "react";
 import "./App.css";
-const 
+const no_classes = 25,
   classCapacity = {
-    EAB415: [15, 10],
-    EAB416: [15, 10],
-    WAB412: [15, 10],
+    EAB415: [15, 4],
+    EAB416: [15, 4],
+    WAB412: [15, 4],
     EAB310: [10, 4],
     EAB304: [10, 4],
     EAB310: [10, 4],
@@ -19,35 +19,88 @@ let class_index = 0,
   lastIndex = 0,
   data = [];
 
-const deptStrength = {
-  CS: 121,
-  AD: 60,
-  ECE:40,
-  ME: 120,
-  CE: 60,
-  PE: 30,
-  RE: 120,
+let deptStrength = {
+  "22CS": 120,
+  "22AD": 60,
+  "22CE": 40,
+  "22ME": 30,
+  "22EC": 60,
+  "22RA": 30,
+  "22CY": 20,
+  "22MR": 0,
 };
-const exams = {
-  CS: ["CS1", "CS7"],
-  AD: ["CS1","AD2"],
-  ECE: ["ECE4", "ECE9"],
-  ME: ["ME3", "ME8"],
-  CE: ["CE6", "CE8", "CE10"],
-  PE: ["PE2", "PE4"],
-  RE: ["PE2", "RE5"],
+let letStrength = {
+  "22CS": 5,
+  "22CE": 3,
+  "22ME": 2,
+  "22EC": 5,
+  "22RA": 4,
+  "22CY": 7,
+  "22MR": 6,
+};
+
+let exams = {
+  "22CS": ["CS1", "CS2", "CS6", "CS7", "CS8", "CS9", "CS10"],
+  "22AD": ["AD1", "AD2", "AD6", "AD7", "AD8", "AD9", "CS6"],
+  "22EC": ["EC1", "EC2", "EC6", "EC7", "EC8", "EC9", "CS6"],
+  "22ME": ["ME1", "ME2", "ME6", "ME7", "ME8", "ME9", "ME10"],
+  "22CE": ["CE1", "CE2", "CE6", "CE7", "CE8", "ME6", "CS5"],
+  "22CY": ["CY1", "CY2", "CY6", "CY7", "CY8", "CY9", "CY10"],
+  "22RA": ["RA1", "RA2", "RA6", "RA7", "RA8", "RA9", "RA10"],
+};
+
+const electives = {
+  "22CS": ["CS6", "CS7", "CS8", "CS9", "CS10"],
+  "22AD": ["AD6", "AD7", "AD8", "AD9", "CS6"],
+  "22EC": ["EC6", "EC7", "EC8", "EC9", "CS6"],
+  "22ME": ["ME6", "ME7", "ME8", "ME9", "ME10"],
+  "22CE": ["CE6", "CE7", "CE8", "ME6", "CS5"],
+  "22CY": ["CY6", "CY7", "CY8", "CY9", "CY10"],
+  "22RA": ["RA6", "RA7", "RA8", "RA9", "RA10"],
+};
+
+let supIndex = 0;
+let sup = {
+  RA1: ["JEC19RA004", "JEC19RA007"],
+  ME1: ["JEC19ME004", "JEC19ME013", "JEC19ME007"],
 };
 
 const slots = {
-  A: ["CS1", "ME3", "PE2","CE6"],
-  B: ["ECE4", "RE3"],
-  C: ["PE2", "CS7", "CE8", "RE5"],
-  D: ["ME8", "ECE9", "CE10"],
-  E: ["AD9"],
-  F: ["PE4", "RE3", "CS5"],
-  G: ["RE5", "CS7", "ME3", "CE6", "ECE4"],
+  A: ["CS6", "AD6", "EC6", "CY6", "CY7", "RA1", "ME1"],
 };
+
 const examToday = slots.A;
+
+const updateDeptStrength = (deptStrength, letStrength) => {
+  const updatedDeptStrength = {};
+  for (const dept in deptStrength) {
+    updatedDeptStrength[dept] = deptStrength[dept] + (letStrength[dept] || 0);
+  }
+  return updatedDeptStrength;
+};
+
+deptStrength = updateDeptStrength(deptStrength, letStrength);
+const filterExams = (exams, electives) => {
+  const result = {};
+
+  for (const department in exams) {
+    const examList = exams[department];
+    const electiveList = electives[department];
+
+    if (electiveList.length > 0) {
+      result[department] = [
+        ...new Set(examList.filter((exam) => !electiveList.includes(exam))),
+        electiveList[0],
+      ];
+    } else {
+      result[department] = examList;
+    }
+  }
+
+  return result;
+};
+
+exams = filterExams(exams, electives);
 
 const classNames = Object.keys(classCapacity);
 
@@ -83,7 +136,7 @@ function optimizer(resultArray, n) {
         sub = [subArray[0], ["DUM", 0], subArray[1]];
         if (subArray.length > n) {
           for (j = 2; j < subArray.length; j++) {
-            sub = sub.concat(["DUM", 0], subArray[j]);
+            sub = sub.concat([["DUM", 0], subArray[j]]);
           }
         }
       }
@@ -105,11 +158,25 @@ function optimizer(resultArray, n) {
     }
   }
 }
+
+function shuffleKeys(obj) {
+  const keys = Object.keys(obj);
+  const shuffledKeys = keys.sort(() => Math.random() - 0.5);
+
+  const shuffledObj = {};
+  shuffledKeys.forEach((key) => {
+    shuffledObj[key] = obj[key];
+  });
+
+  return shuffledObj;
+}
 let viewResultArray = {};
+
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
   const deptList = Object.keys(exams);
   const subList = Object.values(exams);
+  const supplySubs = Object.keys(sup);
 
   examToday.forEach((exam) => {
     let subArray = [];
@@ -119,53 +186,43 @@ function dataArrayMaker(examToday, exams, deptStrength) {
         subArray.push([dept, num]);
       }
     });
+
+    supplySubs.forEach((supplySub, index) => {
+      if (supplySubs[index].includes(exam)) {
+        let supply_num = sup[supplySubs[index]].length;
+        subArray.push([`SUP_${exam}`, supply_num]);
+      }
+    });
+
     resultArray[exam] = subArray;
   });
-  viewResultArray = resultArray;
-  
-console.log(viewResultArray);
 
-  optimizer(resultArray, 2);
+  const shuffledResult = shuffleKeys(resultArray);
+  viewResultArray = shuffledResult;
 
-  optimizer(resultArray, 1);
+  optimizer(shuffledResult, 2);
+  optimizer(shuffledResult, 1);
 
   return data;
 }
 
-function shuffleEvenOddIndices(array) {
-  const evenIndices = array.filter((_, index) => index % 2 === 0);
-  const oddIndices = array.filter((_, index) => index % 2 !== 0);
-
-  shuffleArray(evenIndices);
-
-  shuffleArray(oddIndices);
-
-  for (let i = 0; i < array.length; i++) {
-    if (i % 2 === 0) {
-      array[i] = evenIndices.shift();
-    } else {
-      array[i] = oddIndices.shift();
-    }
-  }
-}
-
-function shuffleArray(arr) {
-  let currentIndex = arr.length;
-
-  while (currentIndex !== 0) {
-    const randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-
-    [arr[currentIndex], arr[randomIndex]] = [
-      arr[randomIndex],
-      arr[currentIndex],
-    ];
-  }
-}
-
 data = dataArrayMaker(examToday, exams, deptStrength);
 
-shuffleEvenOddIndices(data);
+const splitString = (str) => {
+  const match = str.match(/^(\d+)([A-Za-z]+)(\d+)$/);
+
+  if (match) {
+    const deptCode = match[1] + match[2];
+    const value = parseInt(match[3], 10);
+
+    if (deptStrength.hasOwnProperty(deptCode)) {
+      const difference = deptStrength[deptCode] - (letStrength[deptCode] || 0);
+      return difference >= value;
+    }
+    return false;
+  }
+  return false;
+};
 
 let evenBenchIndex = 0;
 let oddBenchIndex = 1;
@@ -173,21 +230,43 @@ let evenRowIndex = 0;
 let oddRowIndex = 0;
 let evenClassIndex = 0;
 let oddClassIndex = 0;
+let supRollNum = [];
+
+function formatToThreeDigits(number) {
+  return number.toString().padStart(3, "0");
+}
 
 const seatArr = (n, sub, b1) => {
   if (n === 0) return;
-
+  let sNum = "";
   let num = 1;
   let benchIndex = b1 % 2 === 0 ? evenBenchIndex : oddBenchIndex;
   let rowIndex = b1 % 2 === 0 ? evenRowIndex : oddRowIndex;
   let classIndex = b1 % 2 === 0 ? evenClassIndex : oddClassIndex;
+  if (sub.includes("SUP")) {
+    const supSub = sub.substring(4);
+    supRollNum = sup[supSub];
+  }
 
   for (let Class = classIndex; Class < classes.length; Class++) {
     const currentClass = classes[Class];
-
     for (let j = benchIndex; j < currentClass[0].length; j += 2) {
       for (let i = rowIndex; i < currentClass.length; i++) {
-        currentClass[i][j] = `${sub}${num}`;
+        if (sub.includes("SUP")) {
+          currentClass[i][j] = supRollNum[supIndex];
+          supIndex++;
+          if (n === supIndex) {
+            supIndex = 0;
+          }
+        } else {
+          sNum = formatToThreeDigits(num);
+          if (splitString(sub.concat(sNum)) == true) {
+            currentClass[i][j] = "JEC" + sub.concat(sNum);
+          } else {
+            currentClass[i][j] = "LJEC" + sub.concat(sNum);
+          }
+        }
+
         if (num === n) {
           if (i === currentClass.length - 1 && b1 % 2 === 0) {
             evenRowIndex = 0;
@@ -244,6 +323,7 @@ const seatArr = (n, sub, b1) => {
 
 let subjectAllotedNum = 0;
 for (const [dept, num] of data) {
+  dept, num;
   if (subjectAllotedNum % 2 === 0) {
     seatArr(num, dept, 0);
   } else {
@@ -257,7 +337,10 @@ const consolidateItems = (items) => {
 
   items.forEach((item) => {
     if (item != 0) {
-      const [prefix, num] = item.match(/^([A-Z]+)(\d+)$/).slice(1);
+      const [prefix, num] = item
+        .match(/^([A-Z]{3,4}\d{2}[A-Z]{2})(\d{3})$/)
+        .slice(1);
+
       if (!groupedItems[prefix]) groupedItems[prefix] = [];
       groupedItems[prefix].push(Number(num));
     }
@@ -265,8 +348,8 @@ const consolidateItems = (items) => {
 
   return Object.entries(groupedItems).flatMap(([prefix, nums]) => {
     nums.sort((a, b) => a - b);
-    const first = `${prefix}${nums[0]}`;
-    const last = `${prefix}${nums[nums.length - 1]}`;
+    const first = `${prefix}${formatToThreeDigits(nums[0])}`;
+    const last = `${prefix}${formatToThreeDigits(nums[nums.length - 1])}`;
     return [first, last];
   });
 };
@@ -279,6 +362,7 @@ const result = classes.map((cls, idx) => {
     items: consolidateItems(allItems),
   };
 });
+       
 const createItemPairs = (items) => {
   const pairs = [];
   for (let i = 0; i < items.length - 1; i += 2) {
@@ -321,11 +405,14 @@ const App = () => {
 
       <div>
         <ul>
-          {Object.entries(viewResultArray).map(([subject, departments]) => (
-            <li style={{ fontWeight: "600" }} key={subject}>
-              {subject} writing by {getDepartmentDetails(departments)}
-            </li>
-          ))}
+          {Object.entries(viewResultArray).map(
+            ([subject, departments]) =>
+              departments.length > 0 && (
+                <li style={{ fontWeight: "600" }} key={subject}>
+                  {subject} writing by {getDepartmentDetails(departments)}
+                </li>
+              )
+          )}
         </ul>
       </div>
       <div>
