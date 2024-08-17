@@ -373,36 +373,35 @@ const createItemPairs = (items) => {
   }
   return pairs;
 };
+  const findDepartmentsDetails = (codes) => {
+    const departmentDetails = {};
 
- const findDepartmentsDetails = (codes) => {
-   const departmentDetails = {};
+    codes.forEach((code) => {
+      // Check exams
+      for (const [department, examCodes] of Object.entries(originalExams)) {
+        if (examCodes.includes(code)) {
+          if (!departmentDetails[department]) {
+            departmentDetails[department] = { exams: [], electives: [] };
+          }
+          departmentDetails[department].exams.push(code);
+        }
+      }
 
-   codes.forEach((code) => {
-     // Check exams
-     for (const [department, examCodes] of Object.entries(originalExams)) {
-       if (examCodes.includes(code)) {
-         if (!departmentDetails[department]) {
-           departmentDetails[department] = { exams: [], electives: [] };
-         }
-         departmentDetails[department].exams.push(code);
-       }
-     }
+      // Check electives
+      for (const [department, electiveCodes] of Object.entries(electives)) {
+        if (electiveCodes.includes(code)) {
+          if (!departmentDetails[department]) {
+            departmentDetails[department] = { exams: [], electives: [] };
+          }
+          departmentDetails[department].electives.push(code);
+        }
+      }
+    });
 
-     // Check electives
-     for (const [department, electiveCodes] of Object.entries(electives)) {
-       if (electiveCodes.includes(code)) {
-         if (!departmentDetails[department]) {
-           departmentDetails[department] = { exams: [], electives: [] };
-         }
-         departmentDetails[department].electives.push(code);
-       }
-     }
-   });
+    return departmentDetails;
+  };
 
-   return departmentDetails;
- };
-
- const departmentDetails = findDepartmentsDetails(examToday);
+  const departmentDetails = findDepartmentsDetails(examToday);
 
 const App = () => {
   return (
@@ -415,7 +414,7 @@ const App = () => {
         <h></h>
       </div>
       <div>
-        <h2>Electives of deaprtments</h2>
+        <h2>Department Electives :</h2>
         {Object.entries(electives).map(([branch, subjects]) => (
           <div key={branch} style={{ marginBottom: "10px" }}>
             <strong>{branch}:</strong>
@@ -428,7 +427,7 @@ const App = () => {
         ))}
       </div>
       <div>
-        <h3>Departments writing today's exam codes:</h3>
+        <h2>Todays Exams departmentwise :</h2>
         <ul>
           {Object.entries(departmentDetails).length > 0 ? (
             Object.entries(departmentDetails).map(
@@ -450,7 +449,21 @@ const App = () => {
             <li>No departments found</li>
           )}
         </ul>
-      </div>sd
+
+        <h2>Supply Exams:</h2>
+        <ul>
+          {Object.entries(sup).length > 0 ? (
+            Object.entries(sup).map(([examCode, students]) => (
+              <li key={examCode}>
+                <strong>{examCode}</strong> exam code is written by students:{" "}
+                {students.join(", ")}
+              </li>
+            ))
+          ) : (
+            <li>No supply exams found</li>
+          )}
+        </ul>
+      </div>
       <div>
         <h3 style={{ color: "lightgreen" }}>
           Neighbouring Seats left empty -{" "}
