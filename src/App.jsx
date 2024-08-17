@@ -48,6 +48,7 @@ let exams = {
   "22CY": ["CY1", "CY2", "CY6", "CY7", "CY8", "CY9", "CY10"],
   "22RA": ["RA1", "RA2", "RA6", "RA7", "RA8", "RA9", "RA10"],
 };
+let originalExams = exams;
 
 const electives = {
   "22CS": ["CS6", "CS7", "CS8", "CS9", "CS10"],
@@ -402,7 +403,23 @@ const App = () => {
         </h3>
         <h></h>
       </div>
-
+      <div>
+        <h2>Electives of deaprtments</h2>
+        {Object.entries(electives).map(([branch, subjects]) => (
+          <div key={branch} style={{ marginBottom: "10px" }}>
+            <strong>{branch}:</strong>
+            <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
+              {subjects.map((subject, index) => (
+                <div
+                  key={index}
+                >
+                  {subject},
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
       <div>
         <ul>
           {Object.entries(viewResultArray).map(
