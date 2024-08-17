@@ -48,7 +48,7 @@ let exams = {
   "22CY": ["CY1", "CY2", "CY6", "CY7", "CY8", "CY9", "CY10"],
   "22RA": ["RA1", "RA2", "RA6", "RA7", "RA8", "RA9", "RA10"],
 };
-let originalExams = exams;
+ const originalExams = { ...exams };
 
 const electives = {
   "22CS": ["CS6", "CS7", "CS8", "CS9", "CS10"],
@@ -374,24 +374,35 @@ const createItemPairs = (items) => {
   return pairs;
 };
 
-  const getDepartmentDetails = (departments) => {
-    const deptStrengthMap = new Map();
+ const findDepartmentsDetails = (codes) => {
+   const departmentDetails = {};
 
-    departments.forEach(([department, strength]) => {
-      if (!deptStrengthMap.has(department)) {
-        deptStrengthMap.set(department, strength);
-      } else {
-        deptStrengthMap.set(
-          department,
-          deptStrengthMap.get(department) + strength
-        );
-      }
-    });
+   codes.forEach((code) => {
+     // Check exams
+     for (const [department, examCodes] of Object.entries(originalExams)) {
+       if (examCodes.includes(code)) {
+         if (!departmentDetails[department]) {
+           departmentDetails[department] = { exams: [], electives: [] };
+         }
+         departmentDetails[department].exams.push(code);
+       }
+     }
 
-    return Array.from(deptStrengthMap.entries())
-      .map(([dept, strength]) => `${dept}: ${strength}`)
-      .join(", ");
-  };
+     // Check electives
+     for (const [department, electiveCodes] of Object.entries(electives)) {
+       if (electiveCodes.includes(code)) {
+         if (!departmentDetails[department]) {
+           departmentDetails[department] = { exams: [], electives: [] };
+         }
+         departmentDetails[department].electives.push(code);
+       }
+     }
+   });
+
+   return departmentDetails;
+ };
+
+ const departmentDetails = findDepartmentsDetails(examToday);
 
 const App = () => {
   return (
@@ -410,28 +421,36 @@ const App = () => {
             <strong>{branch}:</strong>
             <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
               {subjects.map((subject, index) => (
-                <div
-                  key={index}
-                >
-                  {subject},
-                </div>
+                <div key={index}>{subject},</div>
               ))}
             </div>
           </div>
         ))}
       </div>
       <div>
+        <h3>Departments writing today's exam codes:</h3>
         <ul>
-          {Object.entries(viewResultArray).map(
-            ([subject, departments]) =>
-              departments.length > 0 && (
-                <li style={{ fontWeight: "600" }} key={subject}>
-                  {subject} writing by {getDepartmentDetails(departments)}
+          {Object.entries(departmentDetails).length > 0 ? (
+            Object.entries(departmentDetails).map(
+              ([dept, { exams, electives }]) => (
+                <li key={dept}>
+                  <strong>{dept}</strong>
+                  <div>
+                    <p>
+                      Exams ({exams.length}): {exams.join(", ")}
+                    </p>
+                    <p>
+                      Electives ({electives.length}): {electives.join(", ")}
+                    </p>
+                  </div>
                 </li>
               )
+            )
+          ) : (
+            <li>No departments found</li>
           )}
         </ul>
-      </div>
+      </div>sd
       <div>
         <h3 style={{ color: "lightgreen" }}>
           Neighbouring Seats left empty -{" "}
