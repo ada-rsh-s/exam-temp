@@ -1,76 +1,176 @@
 import React from "react";
 import "./App.css";
-const no_classes = 25,
+
+const no_classes = 36,
   classCapacity = {
-    EAB415: [15, 4],
-    EAB416: [15, 4],
-    WAB412: [15, 4],
-    EAB310: [10, 4],
+    "EAB 415": [15, 10],
+    "EAB 416": [15, 10],
+    "WAB 412": [15, 10],
+    "EAB 310": [10, 4],
     EAB304: [10, 4],
-    EAB310: [10, 4],
-    EAB350: [10, 4],
-    EAB311: [10, 4],
-    EAB320: [10, 4],
-    EAB316: [10, 4],
-    EAB308: [10, 4],
+    EAB303: [10, 4],
+    EAB306: [10, 4],
+    EAB206: [10, 4],
+    EAB203: [10, 4],
+    EAB204: [10, 4],
+    EAB103: [10, 4],
+    EAB106: [10, 4],
+    EAB104: [10, 4],
+    EAB407: [10, 4],
+    EAB405: [10, 4],
+    EAB401: [10, 4],
+    WAB105: [10, 4],
+    WAB106: [10, 4],
+    WAB107: [10, 4],
+    WAB210: [10, 4],
+    WAB207: [10, 4],
+    WAB206: [10, 4],
+    WAB205: [10, 4],
+    WAB406: [10, 4],
+    WAB403: [10, 4],
+    WAB405: [10, 4],
+    WAB305: [10, 4],
+    WAB304: [10, 4],
+    "ADM 303": [10, 4],
+    "ADM 304": [10, 4],
+    "ADM 305": [10, 4],
+    "ADM 306": [10, 4],
+    "ADM 307": [10, 4],
+    "ADM 308": [10, 4],
+    "ADM 309": [10, 4],
+    "ADM 310": [10, 4],
+    "ADM 311": [10, 4],
   };
-let class_index = 0,
-  classes = [],
-  lastIndex = 0,
-  data = [];
 
 let deptStrength = {
-  "22CS": 120,
-  "22AD": 60,
-  "22CE": 40,
-  "22ME": 30,
-  "22EC": 60,
-  "22RA": 30,
-  "22CY": 20,
-  "22MR": 0,
+  "24CS": 0,
+  "24AD": 0,
+  "24CE": 0,
+  "24EC": 0,
+  "24EE": 0,
+  "24ME": 0,
+  "24MR": 0,
+  "24RA": 0,
+  "21AD": 55,
+  "21CE": 43,
+  "21CS": 127,
+  "21EC": 43,
+  "21EE": 34,
+  "21ME": 57,
+  "21MR": 26,
+  "21RA": 16,
+  "22AD": 64,
+  "22CE": 31,
+  "22CS": 124,
+  "22EC": 57,
+  "22EE": 50,
+  "22ME": 54,
+  "22MR": 29,
+  "22RA": 15,
+  "23AD": 59,
+  "23CE": 27,
+  "23CS": 182,
+  "23RA": 0,
+  "23CSE(Y)": 43,
+  "23EC": 44,
+  "23EE": 43,
+  "23ME": 48,
+  "23MR": 43,
 };
 let letStrength = {
-  "22CS": 5,
-  "22CE": 3,
-  "22ME": 2,
-  "22EC": 5,
-  "22RA": 4,
-  "22CY": 7,
-  "22MR": 6,
+  "24CS": 0,
+  "24AD": 0,
+  "24CE": 0,
+  "24EC": 0,
+  "24EE": 0,
+  "24ME": 0,
+  "24MR": 0,
+  "24RA": 0,
+  "21AD": 0,
+  "21CE": 0,
+  "21CS": 0,
+  "21EC": 0,
+  "21EE": 0,
+  "21ME": 0,
+  "21MR": 0,
+  "21RA": 0,
+  "22AD": 0,
+  "22CE": 0,
+  "22CS": 0,
+  "22EC": 0,
+  "22EE": 0,
+  "22ME": 0,
+  "22MR": 0,
+  "23RA": 0,
+  "22RA": 0,
+  "23AD": 0,
+  "23CE": 0,
+  "23CS": 0,
+  "23CSE(Y)": 0,
+  "23EC": 0,
+  "23EE": 0,
+  "23ME": 0,
+  "23MR": 0,
 };
 
 let exams = {
-  "22CS": ["CS1", "CS2", "CS6", "CS7", "CS8", "CS9", "CS10"],
-  "22AD": ["AD1", "AD2", "AD6", "AD7", "AD8", "AD9", "CS6"],
-  "22EC": ["EC1", "EC2", "EC6", "EC7", "EC8", "EC9", "CS6"],
-  "22ME": ["ME1", "ME2", "ME6", "ME7", "ME8", "ME9", "ME10"],
-  "22CE": ["CE1", "CE2", "CE6", "CE7", "CE8", "ME6", "CS5"],
-  "22CY": ["CY1", "CY2", "CY6", "CY7", "CY8", "CY9", "CY10"],
-  "22RA": ["RA1", "RA2", "RA6", "RA7", "RA8", "RA9", "RA10"],
+  "24CS": ["HUN101"],
+  "24AD": ["HUN101"],
+  "24CE": ["HUN101"],
+  "24EC": ["HUN101"],
+  "24EE": ["HUN101"],
+  "24ME": ["HUN101"],
+  "24MR": ["HUN101"],
+  "24RA": ["HUN101"],
+  "23AD": ["EST200", "HUT200", "MCN201"],
+  "23EE": ["EST200", "HUT200", "MCN201"],
+  "23RA": ["EST200", "HUT200", "MCN201"],
+  "23CE": ["EST200", "HUT200", "MCN201"],
+  "23CS": ["EST200", "HUT200", "MCN201"],
+  "23MR": ["EST200", "HUT200", "MCN201"],
+  "23ME": ["EST200", "HUT200", "MCN201"],
+  "23EC": ["EST200", "HUT200", "MCN201"],
+  "22AD": ["CST309", "MCN301"],
+  "22CE": ["CET309", "MCN301"],
+  "22CS": ["CST309", "MCN301"],
+  "22EC": ["HUT300", "HUT310", "MCN301"],
+  "22EE": ["HUT300", "HUT310", "MCN301"],
+  "22ME": ["HUT300", "HUT310", "MCN301"],
+  "22MR": ["HUT300", "HUT310", "MCN301"],
+  "22RA": ["HUT300", "HUT310", "MCN301"],
+  "21AD": ["CET415"],
+  "21CS": ["CET415"],
+  "21EC": ["CET445"],
+  "21ME": ["CET445"],
+  "21MR": ["CET445"],
+  "21CE": ["MET445"],
+  "21EE": ["MET445"],
 };
- const originalExams = { ...exams };
 
-const electives = {
-  "22CS": ["CS6", "CS7", "CS8", "CS9", "CS10"],
-  "22AD": ["AD6", "AD7", "AD8", "AD9", "CS6"],
-  "22EC": ["EC6", "EC7", "EC8", "EC9", "CS6"],
-  "22ME": ["ME6", "ME7", "ME8", "ME9", "ME10"],
-  "22CE": ["CE6", "CE7", "CE8", "ME6", "CS5"],
-  "22CY": ["CY6", "CY7", "CY8", "CY9", "CY10"],
-  "22RA": ["RA6", "RA7", "RA8", "RA9", "RA10"],
-};
-
-let supIndex = 0;
-let sup = {
-  RA1: ["JEC19RA004", "JEC19RA007"],
-  ME1: ["JEC19ME004", "JEC19ME013", "JEC19ME007"],
-};
+let sup = {};
 
 const slots = {
-  A: ["CS6", "AD6", "EC6", "CY6", "CY7", "RA1", "ME1"],
+  E: [
+    "HUN101",
+    "EST200",
+    "HUT200",
+    "HUT300",
+    "HUT310",
+    "CET415",
+    "CET445",
+    "MET445",
+  ],
 };
 
-const examToday = slots.A;
+//selecting the slot for locating the subjects to be written on that day
+const examToday = slots.E;
+
+//necessary indices and arrays
+let class_index = 0,
+  classes = [],
+  lastIndex = 0,
+  data = [],
+  supIndex = 0;
 
 const updateDeptStrength = (deptStrength, letStrength) => {
   const updatedDeptStrength = {};
@@ -81,28 +181,8 @@ const updateDeptStrength = (deptStrength, letStrength) => {
 };
 
 deptStrength = updateDeptStrength(deptStrength, letStrength);
-const filterExams = (exams, electives) => {
-  const result = {};
 
-  for (const department in exams) {
-    const examList = exams[department];
-    const electiveList = electives[department];
-
-    if (electiveList.length > 0) {
-      result[department] = [
-        ...new Set(examList.filter((exam) => !electiveList.includes(exam))),
-        electiveList[0],
-      ];
-    } else {
-      result[department] = examList;
-    }
-  }
-
-  return result;
-};
-
-exams = filterExams(exams, electives);
-
+//for initializing classes
 const classNames = Object.keys(classCapacity);
 
 for (let i = 0; i < classNames.length; i++) {
@@ -112,6 +192,7 @@ for (let i = 0; i < classNames.length; i++) {
     .map(() => Array(cols).fill(0));
 }
 
+//to calculate strength of odd/even indices
 function strengthCalculator(n, data) {
   let strength = 0;
   for (let i = n; i < data.length; i += 2) {
@@ -121,6 +202,7 @@ function strengthCalculator(n, data) {
   return strength;
 }
 
+//for efficient grouping of departments
 function optimizer(resultArray, n) {
   for (const key in resultArray) {
     const subArray = resultArray[key];
@@ -136,7 +218,7 @@ function optimizer(resultArray, n) {
       } else {
         sub = [subArray[0], ["DUM", 0], subArray[1]];
         if (subArray.length > n) {
-          for (j = 2; j < subArray.length; j++) {
+          for (let j = 2; j < subArray.length; j++) {
             sub = sub.concat([["DUM", 0], subArray[j]]);
           }
         }
@@ -160,21 +242,66 @@ function optimizer(resultArray, n) {
   }
 }
 
-function shuffleKeys(obj) {
-  const keys = Object.keys(obj);
-  const shuffledKeys = keys.sort(() => Math.random() - 0.5);
-
-  const shuffledObj = {};
-  shuffledKeys.forEach((key) => {
-    shuffledObj[key] = obj[key];
-  });
-
-  return shuffledObj;
+//sorting of the resultArray
+function arrayStrength(array) {
+  let total = 0;
+  for (let i = 0; i < array[1].length; i++) {
+    total += array[1][i][1];
+  }
+  return total;
 }
+function arraySorter(resultArray) {
+  let resultArrayEntries = Object.entries(resultArray);
+
+  for (let i = 1; i < resultArrayEntries.length; i++) {
+    let key = resultArrayEntries[i];
+    let j = i - 1;
+    while (
+      j >= 0 &&
+      arrayStrength(resultArrayEntries[j]) < arrayStrength(key)
+    ) {
+      resultArrayEntries[j + 1] = resultArrayEntries[j];
+      j = j - 1;
+    }
+    resultArrayEntries[j + 1] = key;
+  }
+  const finalResultArray = Object.fromEntries(resultArrayEntries);
+  return finalResultArray;
+}
+
+function mergeDepts(exams) {
+  let examsArray = Object.entries(exams);
+  examsArray = examsArray.flat();
+
+  let seen = new Set();
+  let filteredData = {};
+
+  for (let i = 0; i < examsArray.length; i += 2) {
+    let key = examsArray[i];
+    let values = examsArray[i + 1];
+
+    let uniqueValues = values.filter(([code, _]) => {
+      if (!seen.has(code)) {
+        seen.add(code);
+        return true;
+      }
+      return false;
+    });
+
+    if (uniqueValues.length > 0) {
+      filteredData[key] = uniqueValues;
+    }
+  }
+
+  return filteredData;
+}
+
 let viewResultArray = {};
 
+//Normal grouping of departments
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
+
   const deptList = Object.keys(exams);
   const subList = Object.values(exams);
   const supplySubs = Object.keys(sup);
@@ -186,6 +313,7 @@ function dataArrayMaker(examToday, exams, deptStrength) {
         const num = deptStrength[dept];
         subArray.push([dept, num]);
       }
+      resultArray[exam] = subArray;
     });
 
     supplySubs.forEach((supplySub, index) => {
@@ -193,20 +321,19 @@ function dataArrayMaker(examToday, exams, deptStrength) {
         let supply_num = sup[supplySubs[index]].length;
         subArray.push([`SUP_${exam}`, supply_num]);
       }
+
+      resultArray[exam] = subArray;
     });
-
-    resultArray[exam] = subArray;
   });
+  viewResultArray = resultArray;
 
-  const shuffledResult = shuffleKeys(resultArray);
-  viewResultArray = shuffledResult;
+  const mergedArray = mergeDepts(resultArray);
 
-  optimizer(shuffledResult, 2);
-  optimizer(shuffledResult, 1);
+  optimizer(arraySorter(mergedArray), 2);
+  optimizer(arraySorter(mergedArray), 1);
 
   return data;
 }
-
 data = dataArrayMaker(examToday, exams, deptStrength);
 
 const splitString = (str) => {
@@ -332,7 +459,6 @@ for (const [dept, num] of data) {
   }
   subjectAllotedNum++;
 }
-
 const consolidateItems = (items) => {
   const groupedItems = {};
 
@@ -363,7 +489,9 @@ const result = classes.map((cls, idx) => {
     items: consolidateItems(allItems),
   };
 });
-       
+
+
+
 const createItemPairs = (items) => {
   const pairs = [];
   for (let i = 0; i < items.length - 1; i += 2) {
@@ -373,35 +501,25 @@ const createItemPairs = (items) => {
   }
   return pairs;
 };
-  const findDepartmentsDetails = (codes) => {
-    const departmentDetails = {};
 
-    codes.forEach((code) => {
-      // Check exams
-      for (const [department, examCodes] of Object.entries(originalExams)) {
-        if (examCodes.includes(code)) {
-          if (!departmentDetails[department]) {
-            departmentDetails[department] = { exams: [], electives: [] };
-          }
-          departmentDetails[department].exams.push(code);
-        }
-      }
+const getDepartmentDetails = (departments) => {
+  const deptStrengthMap = new Map();
 
-      // Check electives
-      for (const [department, electiveCodes] of Object.entries(electives)) {
-        if (electiveCodes.includes(code)) {
-          if (!departmentDetails[department]) {
-            departmentDetails[department] = { exams: [], electives: [] };
-          }
-          departmentDetails[department].electives.push(code);
-        }
-      }
-    });
+  departments.forEach(([department, strength]) => {
+    if (!deptStrengthMap.has(department)) {
+      deptStrengthMap.set(department, strength);
+    } else {
+      deptStrengthMap.set(
+        department,
+        deptStrengthMap.get(department) + strength
+      );
+    }
+  });
 
-    return departmentDetails;
-  };
-
-  const departmentDetails = findDepartmentsDetails(examToday);
+  return Array.from(deptStrengthMap.entries())
+    .map(([dept, strength]) => `${dept} - ${strength} `)
+    .join(" || ");
+};
 
 const App = () => {
   return (
@@ -413,55 +531,16 @@ const App = () => {
         </h3>
         <h></h>
       </div>
-      <div>
-        <h2>Department Electives :</h2>
-        {Object.entries(electives).map(([branch, subjects]) => (
-          <div key={branch} style={{ marginBottom: "10px" }}>
-            <strong>{branch}:</strong>
-            <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
-              {subjects.map((subject, index) => (
-                <div key={index}>{subject},</div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div>
-        <h2>Todays Exams departmentwise :</h2>
-        <ul>
-          {Object.entries(departmentDetails).length > 0 ? (
-            Object.entries(departmentDetails).map(
-              ([dept, { exams, electives }]) => (
-                <li key={dept}>
-                  <strong>{dept}</strong>
-                  <div>
-                    <p>
-                      Exams ({exams.length}): {exams.join(", ")}
-                    </p>
-                    <p>
-                      Electives ({electives.length}): {electives.join(", ")}
-                    </p>
-                  </div>
-                </li>
-              )
-            )
-          ) : (
-            <li>No departments found</li>
-          )}
-        </ul>
 
-        <h2>Supply Exams:</h2>
+      <div>
         <ul>
-          {Object.entries(sup).length > 0 ? (
-            Object.entries(sup).map(([examCode, students]) => (
-              <li key={examCode}>
-                <strong>{examCode}</strong> exam code is written by students:{" "}
-                {students.join(", ")}
-              </li>
-            ))
-          ) : (
-            <li>No supply exams found</li>
-          )}
+          {Object.entries(viewResultArray).map(([subject, departments]) => (
+            <li style={{ fontWeight: "500" }} key={subject}>
+              {subject} writing by {getDepartmentDetails(departments)} Students
+              <br />
+              <br />
+            </li>
+          ))}
         </ul>
       </div>
       <div>

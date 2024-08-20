@@ -19,15 +19,16 @@
 
 .class-seat {
   border: 1px solid;
-  padding: 20px;
+  padding: 10px;
   min-width: 100px; /* Set a minimum width for each seat */
   text-align: center;
   white-space: nowrap; /* Prevent text from wrapping */
+  margin-bottom: 10px;
 }
 
 /* Optional: Adjust the gap between every 2nd column */
 .class-row > :nth-child(2n) {
-  margin-right: 20px; /* Adjust as needed */
+  margin-right: 50px; /* Adjust as needed */
 }
 
 table {
