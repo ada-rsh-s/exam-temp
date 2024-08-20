@@ -522,6 +522,39 @@ const getDepartmentDetails = (departments) => {
     .join(" || ");
 };
 
+const addLabels = (data) => {
+  // Determine the number of rows and columns
+  const numRows = data.length;
+  const numCols = data[0].length;
+
+  // Initialize counters for labels
+  let aCounter = 1;
+  let bCounter = 1;
+
+  // Create a new array to hold the updated data
+  const updatedData = Array.from({ length: numRows }, () =>
+    Array(numCols * 2 - 1)
+  );
+
+  // Traverse column-wise and increment labels
+  for (let col = 0; col < numCols; col++) {
+    for (let row = 0; row < numRows; row++) {
+      // Determine the label prefix and number based on the column index
+      const labelPrefix = col % 2 === 0 ? "A" : "B";
+      const labelNumber = col % 2 === 0 ? aCounter++ : bCounter++;
+
+      // Generate label
+      const label = `${labelPrefix}${labelNumber}`;
+
+      // Fill the updatedData array with labels and values
+      updatedData[row][col * 2] = label; // Add label
+      updatedData[row][col * 2 + 1] = data[row][col]; // Add value
+    }
+  }
+  
+  return updatedData;
+};
+
 const App = () => {
   return (
     <div className="App">
@@ -550,6 +583,8 @@ const App = () => {
           {Math.abs(strengthCalculator(0, data) - strengthCalculator(1, data))}
         </h3>
       </div>
+      <h1>Notice Board</h1>
+
       <table className="custom-table">
         <thead>
           <tr>
@@ -578,21 +613,45 @@ const App = () => {
           })}
         </tbody>
       </table>
-
-      {classes.map((cls, idx) => (
-        <div key={idx} className="class-section">
-          <h2>{classNames[idx]}</h2>
-          {cls.map((row, rowIndex) => (
-            <div key={rowIndex} className="class-row">
-              {row.map((seat, seatIndex) => (
-                <div key={seatIndex} className="class-seat">
-                  {seat || "Empty"}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      ))}
+      <div>
+        <h1>Classwise Door Notice</h1>
+        {classes.map((cls, idx) => (
+          <div key={idx}>
+            <h3>{classNames[idx]}</h3>
+            {cls[0][0] !== 0 ? (
+              <table border="1">
+                <thead>
+                  <tr>
+                    {cls[0].map((_, colIndex) =>
+                      colIndex % 2 === 0 ? (
+                        <th key={colIndex}>Seat No</th>
+                      ) : (
+                        <th key={colIndex}>Register No</th>
+                      )
+                    )}
+                    {cls[0].map((_, colIndex) =>
+                      colIndex % 2 === 0 ? (
+                        <th key={colIndex}>Seat No</th>
+                      ) : (
+                        <th key={colIndex}>Register No</th>
+                      )
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {addLabels(cls).map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      {row.map((cell, cellIndex) => (
+                        <td key={cellIndex}>{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ):<div>Empty Class</div>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
