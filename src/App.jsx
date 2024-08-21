@@ -1,4 +1,6 @@
 import React from "react";
+import _ from 'lodash';
+
 import "./App.css";
 
 const no_classes = 36,
