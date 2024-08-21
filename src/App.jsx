@@ -226,7 +226,6 @@ function viewExams(examToday,exams,deptStrength) {
 }
 viewExams(examToday,exams,deptStrength)
 
-
 function mergeExamSchedules(exams) {
   let updatedExams = {};
   for (let key in exams) {
@@ -234,15 +233,19 @@ function mergeExamSchedules(exams) {
     for (let otherKey in exams) {
       if (key !== otherKey) {
         exams[key].forEach((exam) => {
-          if (exams[otherKey].includes(exam)) {
-            exams[otherKey].forEach((otherExam) => mergedExams.add(otherExam));
+          if (exams[otherKey].includes(exam)) {            
+            exams[otherKey].forEach((otherExam) => mergedExams.add(otherExam));            
           }
         });
       }
     }
     updatedExams[key] = Array.from(mergedExams);
   }
-  return updatedExams;
+  if(_.isEqual(updatedExams, exams)==false)
+   return mergeExamSchedules(updatedExams);
+  else
+  return updatedExams
+
 }
 
 exams = mergeExamSchedules(exams);
