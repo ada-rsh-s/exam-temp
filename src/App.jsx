@@ -192,6 +192,41 @@ const getDepartmentDetails = (departments) => {
     .join(" || ");
 };
 
+
+let viewResultArray = {};
+
+
+function viewExams(examToday,exams,deptStrength) {
+  const resultArray = {};
+
+  const deptList = Object.keys(exams);
+  const subList = Object.values(exams);
+  const supplySubs = Object.keys(sup);
+
+  examToday.forEach((exam) => {
+    let subArray = [];
+    deptList.forEach((dept, index) => {
+      if (subList[index].includes(exam)) {
+        const num = deptStrength[dept];
+        subArray.push([dept, num]);
+      }
+      resultArray[exam] = subArray;
+    });
+
+    supplySubs.forEach((supplySub, index) => {
+      if (supplySubs[index].includes(exam)) {
+        let supply_num = sup[supplySubs[index]].length;
+        subArray.push([`SUP_${exam}`, supply_num]);
+      }
+
+      resultArray[exam] = subArray;
+    });
+  });
+  viewResultArray = resultArray;
+}
+viewExams(examToday,exams,deptStrength)
+
+
 function mergeExamSchedules(exams) {
   let updatedExams = {};
   for (let key in exams) {
@@ -337,8 +372,6 @@ function mergeDepts(exams) {
   return filteredData;
 }
 
-let viewResultArray = {};
-
 //Normal grouping of departments
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
@@ -366,6 +399,8 @@ function dataArrayMaker(examToday, exams, deptStrength) {
         subArray.push([`SUP_${exam}`, supply_num]);
       }
     });
+    console.log(resultArray);
+    
 
     if (subArray.length > 0) {
       resultArray[exam] = subArray;
@@ -377,7 +412,6 @@ function dataArrayMaker(examToday, exams, deptStrength) {
       delete resultArray[key];
     }
   });
-  viewResultArray=resultArray
 
   optimizer(arraySorter(resultArray), 2);
   optimizer(arraySorter(resultArray), 1);
@@ -588,7 +622,6 @@ const App = () => {
         <h3 style={{ color: "lightgreen" }}>
           Today's Exams - {examToday.join(", ")}
         </h3>
-        <h></h>
       </div>
 
       <div>
