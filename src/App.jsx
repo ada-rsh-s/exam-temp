@@ -173,6 +173,46 @@ let class_index = 0,
   data = [],
   supIndex = 0;
 
+const getDepartmentDetails = (departments) => {
+  const deptStrengthMap = new Map();
+
+  departments.forEach(([department, strength]) => {
+    if (!deptStrengthMap.has(department)) {
+      deptStrengthMap.set(department, strength);
+    } else {
+      deptStrengthMap.set(
+        department,
+        deptStrengthMap.get(department) + strength
+      );
+    }
+  });
+
+  return Array.from(deptStrengthMap.entries())
+    .map(([dept, strength]) => `${dept} - ${strength} `)
+    .join(" || ");
+};
+
+function mergeExamSchedules(exams) {
+  let updatedExams = {};
+  for (let key in exams) {
+    let mergedExams = new Set(exams[key]);
+    for (let otherKey in exams) {
+      if (key !== otherKey) {
+        exams[key].forEach((exam) => {
+          if (exams[otherKey].includes(exam)) {
+            exams[otherKey].forEach((otherExam) => mergedExams.add(otherExam));
+          }
+        });
+      }
+    }
+    updatedExams[key] = Array.from(mergedExams);
+  }
+  return updatedExams;
+}
+
+exams = mergeExamSchedules(exams);
+
+
 const updateDeptStrength = (deptStrength, letStrength) => {
   const updatedDeptStrength = {};
   for (const dept in deptStrength) {
@@ -306,35 +346,45 @@ function dataArrayMaker(examToday, exams, deptStrength) {
   const deptList = Object.keys(exams);
   const subList = Object.values(exams);
   const supplySubs = Object.keys(sup);
+  const deptSet = new Set();
 
   examToday.forEach((exam) => {
     let subArray = [];
     deptList.forEach((dept, index) => {
       if (subList[index].includes(exam)) {
         const num = deptStrength[dept];
-        subArray.push([dept, num]);
+        if (!deptSet.has(dept)) {
+          subArray.push([dept, num]);
+          deptSet.add(dept);
+        }
       }
-      resultArray[exam] = subArray;
     });
 
     supplySubs.forEach((supplySub, index) => {
-      if (supplySubs[index].includes(exam)) {
-        let supply_num = sup[supplySubs[index]].length;
+      if (supplySub.includes(exam)) {
+        let supply_num = sup[supplySub].length;
         subArray.push([`SUP_${exam}`, supply_num]);
       }
-
-      resultArray[exam] = subArray;
     });
+
+    if (subArray.length > 0) {
+      resultArray[exam] = subArray;
+    }
   });
-  viewResultArray = resultArray;
 
-  const mergedArray = mergeDepts(resultArray);
+  Object.keys(resultArray).forEach((key) => {
+    if (resultArray[key].length === 0) {
+      delete resultArray[key];
+    }
+  });
+  viewResultArray=resultArray
 
-  optimizer(arraySorter(mergedArray), 2);
-  optimizer(arraySorter(mergedArray), 1);
+  optimizer(arraySorter(resultArray), 2);
+  optimizer(arraySorter(resultArray), 1);
 
   return data;
 }
+
 data = dataArrayMaker(examToday, exams, deptStrength);
 
 const splitString = (str) => {
@@ -503,52 +553,27 @@ const createItemPairs = (items) => {
   return pairs;
 };
 
-const getDepartmentDetails = (departments) => {
-  const deptStrengthMap = new Map();
-
-  departments.forEach(([department, strength]) => {
-    if (!deptStrengthMap.has(department)) {
-      deptStrengthMap.set(department, strength);
-    } else {
-      deptStrengthMap.set(
-        department,
-        deptStrengthMap.get(department) + strength
-      );
-    }
-  });
-
-  return Array.from(deptStrengthMap.entries())
-    .map(([dept, strength]) => `${dept} - ${strength} `)
-    .join(" || ");
-};
 
 const addLabels = (data) => {
-  // Determine the number of rows and columns
   const numRows = data.length;
   const numCols = data[0].length;
 
-  // Initialize counters for labels
   let aCounter = 1;
   let bCounter = 1;
 
-  // Create a new array to hold the updated data
   const updatedData = Array.from({ length: numRows }, () =>
     Array(numCols * 2 - 1)
   );
 
-  // Traverse column-wise and increment labels
   for (let col = 0; col < numCols; col++) {
     for (let row = 0; row < numRows; row++) {
-      // Determine the label prefix and number based on the column index
       const labelPrefix = col % 2 === 0 ? "A" : "B";
       const labelNumber = col % 2 === 0 ? aCounter++ : bCounter++;
 
-      // Generate label
       const label = `${labelPrefix}${labelNumber}`;
 
-      // Fill the updatedData array with labels and values
-      updatedData[row][col * 2] = label; // Add label
-      updatedData[row][col * 2 + 1] = data[row][col]; // Add value
+      updatedData[row][col * 2] = label; 
+      updatedData[row][col * 2 + 1] = data[row][col];
     }
   }
   
