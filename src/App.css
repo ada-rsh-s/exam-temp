@@ -1,56 +1,96 @@
-.App {
+/* General styles */
+body {
   font-family: Arial, sans-serif;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #000000;
+}
+div{
+    background: #ffff;
 }
 
-.class-section {
+
+
+div {
   margin-bottom: 20px;
 }
 
-.class-wrapper {
-  overflow-x: auto; /* Enable horizontal scrolling */
-  padding-bottom: 10px;
-}
-
-.class-row {
-  display: flex;
-  gap: 10px; /* Adjust the gap between seats */
-}
-
-
-
-/* Optional: Adjust the gap between every 2nd column */
-.class-row > :nth-child(2n) {
-  margin-right: 50px; /* Adjust as needed */
-}
-
+/* Table styles */
 table {
-  width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 18px;
-  text-align: left;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(14, 12, 12, 0.1);
+  table-layout: auto; /* Allow table to resize based on content */
+  width: auto; /* Make table width auto to fit content */
 }
 
 th, td {
-  padding: 12px;
-  border-bottom: 1px solid ;
+  padding: 10px;
+  text-align: left;
+  
+  border: 1px solid #000000; /* Ensure all cells have a border */
+  white-space: nowrap; /* Prevent content from wrapping */
 }
 
 th {
-  font-weight: bold;
+  background-color: #12a9ac;
+  color: #fff;
 }
 
 td {
-  padding: 5px 15px;
-  vertical-align: top;
+  background-color: #f9f9f9;
+  color: #333; /* Darker text color for better readability */
 }
 
-td[colspan] {
-  text-align: center;
-  font-weight: bold;
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  table {
+    width: 100%; /* Full width on small screens */
+  }
+
+  th, td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  table, th, td {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    border-bottom: none;
+  }
+
+  tr td, tr th {
+    border: none;
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  tr td::before, tr th::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
 }
 
-td, th {
-  border-right: 2px solid #fff; /* Adjust color and width as needed */
+/* Mobile-specific styles */
+@media screen and (max-width: 480px) {
+  th, td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  tr td::before, tr th::before {
+    font-size: 12px;
+  }
 }

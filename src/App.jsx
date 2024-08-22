@@ -1,48 +1,46 @@
 import React from "react";
-import _ from 'lodash';
-
+import _ from "lodash";
 import "./App.css";
 
-const no_classes = 36,
-  classCapacity = {
-    "EAB 415": [15, 10],
-    "EAB 416": [15, 10],
-    "WAB 412": [15, 10],
-    "EAB 310": [10, 4],
-    EAB304: [10, 4],
-    EAB303: [10, 4],
-    EAB306: [10, 4],
-    EAB206: [10, 4],
-    EAB203: [10, 4],
-    EAB204: [10, 4],
-    EAB103: [10, 4],
-    EAB106: [10, 4],
-    EAB104: [10, 4],
-    EAB407: [10, 4],
-    EAB405: [10, 4],
-    EAB401: [10, 4],
-    WAB105: [10, 4],
-    WAB106: [10, 4],
-    WAB107: [10, 4],
-    WAB210: [10, 4],
-    WAB207: [10, 4],
-    WAB206: [10, 4],
-    WAB205: [10, 4],
-    WAB406: [10, 4],
-    WAB403: [10, 4],
-    WAB405: [10, 4],
-    WAB305: [10, 4],
-    WAB304: [10, 4],
-    "ADM 303": [10, 4],
-    "ADM 304": [10, 4],
-    "ADM 305": [10, 4],
-    "ADM 306": [10, 4],
-    "ADM 307": [10, 4],
-    "ADM 308": [10, 4],
-    "ADM 309": [10, 4],
-    "ADM 310": [10, 4],
-    "ADM 311": [10, 4],
-  };
+const classCapacity = {
+  "EAB 415": [15, 10],
+  "EAB 416": [15, 10],
+  "WAB 412": [15, 10],
+  "EAB 310": [10, 4],
+  EAB304: [10, 4],
+  EAB303: [10, 4],
+  EAB306: [10, 4],
+  EAB206: [10, 4],
+  EAB203: [10, 4],
+  EAB204: [10, 4],
+  EAB103: [10, 4],
+  EAB106: [10, 4],
+  EAB104: [10, 4],
+  EAB407: [10, 4],
+  EAB405: [10, 4],
+  EAB401: [10, 4],
+  WAB105: [10, 4],
+  WAB106: [10, 4],
+  WAB107: [10, 4],
+  WAB210: [10, 4],
+  WAB207: [10, 4],
+  WAB206: [10, 4],
+  WAB205: [10, 4],
+  WAB406: [10, 4],
+  WAB403: [10, 4],
+  WAB405: [10, 4],
+  WAB305: [10, 4],
+  WAB304: [10, 4],
+  "ADM 303": [10, 4],
+  "ADM 304": [10, 4],
+  "ADM 305": [10, 4],
+  "ADM 306": [10, 4],
+  "ADM 307": [10, 4],
+  "ADM 308": [10, 4],
+  "ADM 309": [10, 4],
+  "ADM 310": [10, 4],
+  "ADM 311": [10, 4],
+};
 
 let deptStrength = {
   "24CS": 0,
@@ -132,7 +130,7 @@ let exams = {
   "23MR": ["EST200", "HUT200", "MCN201"],
   "23ME": ["EST200", "HUT200", "MCN201"],
   "23EC": ["EST200", "HUT200", "MCN201"],
-  "23CSE(Y)":[],
+  "23CSE(Y)": [],
   "22AD": ["CST309", "MCN301"],
   "22CE": ["CET309", "MCN301"],
   "22CS": ["CST309", "MCN301"],
@@ -167,6 +165,27 @@ const slots = {
 
 //selecting the slot for locating the subjects to be written on that day
 const examToday = slots.E;
+function mergeExamSchedules(exams) {
+  let updatedExams = {};
+  for (let key in exams) {
+    let mergedExams = new Set(exams[key]);
+    for (let otherKey in exams) {
+      if (key !== otherKey) {
+        exams[key].forEach((exam) => {
+          if (exams[otherKey].includes(exam)) {
+            exams[otherKey].forEach((otherExam) => mergedExams.add(otherExam));
+          }
+        });
+      }
+    }
+    updatedExams[key] = Array.from(mergedExams);
+  }
+  if (_.isEqual(updatedExams, exams) == false)
+    return mergeExamSchedules(updatedExams);
+  else return updatedExams;
+}
+
+exams = mergeExamSchedules(exams);
 
 //necessary indices and arrays
 let class_index = 0,
@@ -174,6 +193,19 @@ let class_index = 0,
   lastIndex = 0,
   data = [],
   supIndex = 0;
+
+
+
+const updateDeptStrength = (deptStrength, letStrength) => {
+  const updatedDeptStrength = {};
+  for (const dept in deptStrength) {
+    updatedDeptStrength[dept] = deptStrength[dept] + (letStrength[dept] || 0);
+  }
+  return updatedDeptStrength;
+};
+
+deptStrength = updateDeptStrength(deptStrength, letStrength);
+
 
 const getDepartmentDetails = (departments) => {
   const deptStrengthMap = new Map();
@@ -195,73 +227,7 @@ const getDepartmentDetails = (departments) => {
 };
 
 
-let viewResultArray = {};
 
-
-function viewExams(examToday,exams,deptStrength) {
-  const resultArray = {};
-
-  const deptList = Object.keys(exams);
-  const subList = Object.values(exams);
-  const supplySubs = Object.keys(sup);
-
-  examToday.forEach((exam) => {
-    let subArray = [];
-    deptList.forEach((dept, index) => {
-      if (subList[index].includes(exam)) {
-        const num = deptStrength[dept];
-        subArray.push([dept, num]);
-      }
-      resultArray[exam] = subArray;
-    });
-
-    supplySubs.forEach((supplySub, index) => {
-      if (supplySubs[index].includes(exam)) {
-        let supply_num = sup[supplySubs[index]].length;
-        subArray.push([`SUP_${exam}`, supply_num]);
-      }
-
-      resultArray[exam] = subArray;
-    });
-  });
-  viewResultArray = resultArray;
-}
-viewExams(examToday,exams,deptStrength)
-
-function mergeExamSchedules(exams) {
-  let updatedExams = {};
-  for (let key in exams) {
-    let mergedExams = new Set(exams[key]);
-    for (let otherKey in exams) {
-      if (key !== otherKey) {
-        exams[key].forEach((exam) => {
-          if (exams[otherKey].includes(exam)) {            
-            exams[otherKey].forEach((otherExam) => mergedExams.add(otherExam));            
-          }
-        });
-      }
-    }
-    updatedExams[key] = Array.from(mergedExams);
-  }
-  if(_.isEqual(updatedExams, exams)==false)
-   return mergeExamSchedules(updatedExams);
-  else
-  return updatedExams
-
-}
-
-exams = mergeExamSchedules(exams);
-
-
-const updateDeptStrength = (deptStrength, letStrength) => {
-  const updatedDeptStrength = {};
-  for (const dept in deptStrength) {
-    updatedDeptStrength[dept] = deptStrength[dept] + (letStrength[dept] || 0);
-  }
-  return updatedDeptStrength;
-};
-
-deptStrength = updateDeptStrength(deptStrength, letStrength);
 
 //for initializing classes
 const classNames = Object.keys(classCapacity);
@@ -276,6 +242,7 @@ for (let i = 0; i < classNames.length; i++) {
 //to calculate strength of odd/even indices
 function strengthCalculator(n, data) {
   let strength = 0;
+
   for (let i = n; i < data.length; i += 2) {
     strength += data[i][1];
   }
@@ -347,36 +314,41 @@ function arraySorter(resultArray) {
     resultArrayEntries[j + 1] = key;
   }
   const finalResultArray = Object.fromEntries(resultArrayEntries);
+
   return finalResultArray;
 }
 
-function mergeDepts(exams) {
-  let examsArray = Object.entries(exams);
-  examsArray = examsArray.flat();
+let viewResultArray = {};
 
-  let seen = new Set();
-  let filteredData = {};
+function viewExams(examToday, exams, deptStrength) {
+  const resultArray = {};
 
-  for (let i = 0; i < examsArray.length; i += 2) {
-    let key = examsArray[i];
-    let values = examsArray[i + 1];
+  const deptList = Object.keys(exams);
+  const subList = Object.values(exams);
+  const supplySubs = Object.keys(sup);
 
-    let uniqueValues = values.filter(([code, _]) => {
-      if (!seen.has(code)) {
-        seen.add(code);
-        return true;
+  examToday.forEach((exam) => {
+    let subArray = [];
+    deptList.forEach((dept, index) => {
+      if (subList[index].includes(exam)) {
+        const num = deptStrength[dept];
+        subArray.push([dept, num]);
       }
-      return false;
+      resultArray[exam] = subArray;
     });
 
-    if (uniqueValues.length > 0) {
-      filteredData[key] = uniqueValues;
-    }
-  }
+    supplySubs.forEach((supplySub, index) => {
+      if (supplySubs[index].includes(exam)) {
+        let supply_num = sup[supplySubs[index]].length;
+        subArray.push([`SUP_${exam}`, supply_num]);
+      }
 
-  return filteredData;
+      resultArray[exam] = subArray;
+    });
+  });
+  viewResultArray = resultArray;
 }
-
+viewExams(examToday, exams, deptStrength);
 //Normal grouping of departments
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
@@ -404,8 +376,6 @@ function dataArrayMaker(examToday, exams, deptStrength) {
         subArray.push([`SUP_${exam}`, supply_num]);
       }
     });
-    console.log(resultArray);
-    
 
     if (subArray.length > 0) {
       resultArray[exam] = subArray;
@@ -423,7 +393,6 @@ function dataArrayMaker(examToday, exams, deptStrength) {
 
   return data;
 }
-
 data = dataArrayMaker(examToday, exams, deptStrength);
 
 const splitString = (str) => {
@@ -549,6 +518,7 @@ for (const [dept, num] of data) {
   }
   subjectAllotedNum++;
 }
+
 const consolidateItems = (items) => {
   const groupedItems = {};
 
@@ -571,29 +541,98 @@ const consolidateItems = (items) => {
   });
 };
 
-const result = classes.map((cls, idx) => {
+const calculateCounts = (items) => {
+  const counts = [];
+  for (let i = 1; i < items.length; i += 2) {
+    const num1 = parseInt(items[i].slice(-3));
+    const num0 = parseInt(items[i - 1].slice(-3));
+    counts.push(num1 - num0 + 1);
+  }
+  return counts;
+};
+
+const noticeBoardView = classes.map((cls, idx) => {
   const allItems = cls.flat();
+  const consolidatedItems = consolidateItems(allItems);
+  const counts = calculateCounts(consolidatedItems);
 
   return {
     class: classNames[idx],
-    items: consolidateItems(allItems),
+    items: consolidatedItems,
+    count: counts,
   };
 });
 
+function organizeByDept(classes, data, classCapacity, letStrength) {
+  let classNames = Object.keys(classCapacity);
+  let mainArray = [];
+  let array = data;
+  let subArrayToRemove = ["DUM", 0];
+  let keys = ["dept", "rooms", "rollNums", "count"];
+  array = array.filter(
+    (subArray) => JSON.stringify(subArray) !== JSON.stringify(subArrayToRemove)
+  );
+  array.forEach((dept) => {
+    let strength = dept[1];
+    let letCount = letStrength[dept[0]];
+    let realStrength = strength - letCount;
 
+    let rollNums = [];
+    let count = [];
+    let rooms = [];
+    let depObj = {};
+    depObj.dept = dept[0];
+    classes.forEach((Class, index) => {
+      let individualList = Class.flat(2);
+      let cnt = 0;
+      individualList = individualList.filter((item) => item !== 0);
+      individualList.forEach((str) => {
+        if (str.includes(dept[0])) cnt++;
+      });
+      if (cnt != 0) count.push(cnt);
 
-const createItemPairs = (items) => {
-  const pairs = [];
-  for (let i = 0; i < items.length - 1; i += 2) {
-    if (i + 1 < items.length) {
-      pairs.push(`${items[i]} - ${items[i + 1]}`);
-    }
-  }
-  return pairs;
-};
+      if (individualList.some((str) => str.includes(dept[0])))
+        rooms.push(classNames[index]);
+    });
 
+    let firstRollNo = 1;
+    count.forEach((num) => {
+      let secondRollNo = firstRollNo + num - 1;
+      if (firstRollNo > realStrength) {
+        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
+        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
+      } else if (secondRollNo > realStrength) {
+        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
+        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
+      } else {
+        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
+        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
+      }
+      firstRollNo = secondRollNo + 1;
+    });
+    depObj.count = count;
+    depObj.rooms = rooms;
+    depObj.rollNums = rollNums;
+    mainArray.push(depObj);
+  });
+  mainArray.sort((a, b) => {
+    let deptA = a.dept.match(/\d+/)[0];
+    let deptB = b.dept.match(/\d+/)[0];
 
-const addLabels = (data) => {
+    let prefixA = a.dept.match(/[A-Z]+/)[0];
+    let prefixB = b.dept.match(/[A-Z]+/)[0];
+
+    if (prefixA < prefixB) return -1;
+    if (prefixA > prefixB) return 1;
+
+    return deptA - deptB;
+  });
+  return mainArray;
+}
+
+const deptView = organizeByDept(classes, data, classCapacity, letStrength);
+
+const classroomView = (data) => {
   const numRows = data.length;
   const numCols = data[0].length;
 
@@ -608,23 +647,41 @@ const addLabels = (data) => {
     for (let row = 0; row < numRows; row++) {
       const labelPrefix = col % 2 === 0 ? "A" : "B";
       const labelNumber = col % 2 === 0 ? aCounter++ : bCounter++;
-
       const label = `${labelPrefix}${labelNumber}`;
-
-      updatedData[row][col * 2] = label; 
+      updatedData[row][col * 2] = label;
       updatedData[row][col * 2 + 1] = data[row][col];
     }
   }
-  
+
   return updatedData;
+};
+
+// classes.forEach((cls, idx) => {
+// console.log(classroomView(cls));
+// });
+
+// classes.forEach((cls, idx) => {
+//   console.log(`\n${classNames[idx]}\n`);
+//   cls.forEach((row) => {
+//     console.log(row);
+//   });
+// });
+
+const createItemPairs = (items) => {
+  const pairs = [];
+  for (let i = 0; i < items.length - 1; i += 2) {
+    if (i + 1 < items.length) {
+      pairs.push(`${items[i]} - ${items[i + 1]}`);
+    }
+  }
+  return pairs;
 };
 
 const App = () => {
   return (
-    <div className="App">
-      <h1>Exam Seating Arrangement</h1>
+    <>
       <div>
-        <h3 style={{ color: "lightgreen" }}>
+        <h3 style={{ color: "green" }}>
           Today's Exams - {examToday.join(", ")}
         </h3>
       </div>
@@ -646,38 +703,77 @@ const App = () => {
           {Math.abs(strengthCalculator(0, data) - strengthCalculator(1, data))}
         </h3>
       </div>
-      <h1>Notice Board</h1>
 
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>Class</th>
-            <th>Register No</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.map(({ class: className, items }, classIndex) => {
-            const pairs = createItemPairs(items);
-            const rowSpan = pairs.length || 1;
-
-            return pairs.length > 0 ? (
-              pairs.map((pair, pairIndex) => (
-                <tr key={`${className}-${pairIndex}`}>
-                  {pairIndex === 0 && <td rowSpan={rowSpan}>{className}</td>}
-                  <td>{pair}</td>
-                </tr>
-              ))
-            ) : (
-              <tr key={classIndex}>
-                <td>{className}</td>
-                <td>EMPTY</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
       <div>
-        <h1>Classwise Door Notice</h1>
+        <h1>Notice Board</h1>
+        <table className="custom-table">
+          <thead>
+            <tr>
+              <th>Class</th>
+              <th>Register No</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {noticeBoardView.map(
+              ({ class: className, items, count }, classIndex) => {
+                const pairs = createItemPairs(items);
+                const rowSpan = pairs.length || 1;
+
+                return pairs.length > 0 ? (
+                  pairs.map((pair, pairIndex) => (
+                    <tr key={`${className}-${pairIndex}`}>
+                      {pairIndex === 0 && (
+                        <td rowSpan={rowSpan}>{className}</td>
+                      )}
+                      <td>{pair}</td>
+                      <td>{count[pairIndex] || "-"}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr key={classIndex}>
+                    <td>{className}</td>
+                    <td>EMPTY</td>
+                    <td>-</td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h1>Department View</h1>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Department</th>
+              <th>Room</th>
+              <th>Roll Numbers</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody>
+            {deptView.map((item, index) => {
+              const pairs = createItemPairs(item.rollNums);
+              return item.rooms.map((room, roomIndex) => (
+                <tr key={`${index}-${roomIndex}`}>
+                  {roomIndex === 0 ? (
+                    <td rowSpan={item.rooms.length}>{item.dept}</td>
+                  ) : null}
+                  <td>{room}</td>
+                  <td>{pairs[roomIndex] || "-"}</td>
+                  <td>{item.count[roomIndex]}</td>
+                </tr>
+              ));
+            })}
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h1>Classroom Door View</h1>
+
         {classes.map((cls, idx) => (
           <div key={idx}>
             <h3>{classNames[idx]}</h3>
@@ -702,20 +798,26 @@ const App = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {addLabels(cls).map((row, rowIndex) => (
+                  {classroomView(cls).map((row, rowIndex) => (
                     <tr key={rowIndex}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={cellIndex}>{cell}</td>
-                      ))}
+                      {row.map((cell, cellIndex) =>
+                        cell != 0 ? (
+                          <td key={cellIndex}>{cell}</td>
+                        ) : (
+                          <td key={cellIndex}>Empty</td>
+                        )
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </table>
-            ):<div>Empty Class</div>}
+            ) : (
+              <div>Empty Class</div>
+            )}
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
