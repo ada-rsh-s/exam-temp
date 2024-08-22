@@ -143,7 +143,7 @@ let exams = {
 let sup = {};
 
 const slots = {
-  E: ["HUT300", "HUT310", "HUT200", "EST200"],
+  E: ["HUT300", "HUT310", "HUT200", "EST200","CET309","CST309"],
 };
 
 //selecting the slot for locating the subjects to be written on that day
