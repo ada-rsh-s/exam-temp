@@ -3,10 +3,10 @@ import _ from "lodash";
 import "./App.css";
 
 const classCapacity = {
-  "EAB 415": [15, 10],
-  "EAB 416": [15, 10],
-  "WAB 412": [15, 10],
-  "EAB 310": [10, 4],
+  EAB415: [15, 10],
+  EAB416: [15, 10],
+  WAB412: [15, 10],
+  EAB310: [10, 4],
   EAB304: [10, 4],
   EAB303: [10, 4],
   EAB306: [10, 4],
@@ -31,15 +31,15 @@ const classCapacity = {
   WAB405: [10, 4],
   WAB305: [10, 4],
   WAB304: [10, 4],
-  "ADM 303": [10, 4],
-  "ADM 304": [10, 4],
-  "ADM 305": [10, 4],
-  "ADM 306": [10, 4],
-  "ADM 307": [10, 4],
-  "ADM 308": [10, 4],
-  "ADM 309": [10, 4],
-  "ADM 310": [10, 4],
-  "ADM 311": [10, 4],
+  ADM303: [10, 4],
+  ADM304: [10, 4],
+  ADM305: [10, 4],
+  ADM306: [10, 4],
+  ADM307: [10, 4],
+  ADM308: [10, 4],
+  ADM309: [10, 4],
+  ADM310: [10, 4],
+  ADM311: [10, 4],
 };
 
 let deptStrength = {
@@ -123,14 +123,13 @@ let exams = {
   "24MR": ["HUN101"],
   "24RA": ["HUN101"],
   "23AD": ["EST200", "HUT200", "MCN201"],
-  "23EE": ["EST200", "HUT200", "MCN201"],
-  "23RA": ["EST200", "HUT200", "MCN201"],
   "23CE": ["EST200", "HUT200", "MCN201"],
   "23CS": ["EST200", "HUT200", "MCN201"],
-  "23MR": ["EST200", "HUT200", "MCN201"],
-  "23ME": ["EST200", "HUT200", "MCN201"],
   "23EC": ["EST200", "HUT200", "MCN201"],
-  "23CSE(Y)": [],
+  "23EE": ["EST200", "HUT200", "MCN201"],
+  "23ME": ["EST200", "HUT200", "MCN201"],
+  "23MR": ["EST200", "HUT200", "MCN201"],
+  "23RA": ["EST200", "HUT200", "MCN201"],
   "22AD": ["CST309", "MCN301"],
   "22CE": ["CET309", "MCN301"],
   "22CS": ["CST309", "MCN301"],
@@ -139,28 +138,12 @@ let exams = {
   "22ME": ["HUT300", "HUT310", "MCN301"],
   "22MR": ["HUT300", "HUT310", "MCN301"],
   "22RA": ["HUT300", "HUT310", "MCN301"],
-  "21AD": ["CET415"],
-  "21CS": ["CET415"],
-  "21EC": ["CET445"],
-  "21ME": ["CET445"],
-  "21MR": ["CET445"],
-  "21CE": ["MET445"],
-  "21EE": ["MET445"],
 };
 
 let sup = {};
 
 const slots = {
-  E: [
-    "HUN101",
-    "EST200",
-    "HUT200",
-    "HUT300",
-    "HUT310",
-    "CET415",
-    "CET445",
-    "MET445",
-  ],
+  E: ["HUT300", "HUT310", "HUT200", "EST200"],
 };
 
 //selecting the slot for locating the subjects to be written on that day
