@@ -1,6 +1,7 @@
 import React from "react";
 import _ from "lodash";
 import "./App.css";
+
 const classCapacity = {
   // EAB415: [15, 10],
   // EAB416: [15, 10],
@@ -61,22 +62,22 @@ let deptStrength = {
   "21ME": 34,
   "21MR": 24,
   "21RA": 15,
-  "22AD": 16,
+  "22AD": 61,
   "22CE": 20,
-  "22CS": 121,
+  "22CS": 125,
   "22EC": 51,
   "22EE": 35,
   "22ME": 37,
-  "22MR": 24,
+  "22MR": 25,
   "22RA": 15,
   "23AD": 56,
-  "23CE": 18,
-  "23CS": 175,
+  "23CE": 19,
+  "23CS": 174,
   "23RA": 0,
-  "23CSE(Y)": 43,
+  "23CC": 43,
   "23EC": 44,
   "23EE": 28,
-  "23ME": 28,
+  "23ME": 30,
   "23MR": 34,
 };
 let letStrength = {
@@ -111,7 +112,7 @@ let letStrength = {
   "23AD": 3,
   "23CE": 9,
   "23CS": 7,
-  "23CSE(Y)": 3, // confusion 0 here
+  "23CC": 2, // confusion 0 here
   "23EC": 10,
   "23EE": 17,
   "23ME": 21,
@@ -130,6 +131,7 @@ let exams = {
   "24RA": ["HUN101"],
   "23AD": ["EST200", "HUT200", "MCN201"],
   "23CE": ["EST200", "HUT200", "MCN201"],
+  "23CC": ["EST200", "HUT200", "MCN201"],
   "23CS": ["EST200", "HUT200", "MCN201"],
   "23EC": ["EST200", "HUT200", "MCN201"],
   "23EE": ["EST200", "HUT200", "MCN201"],
