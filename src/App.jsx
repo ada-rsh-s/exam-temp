@@ -1,45 +1,47 @@
 import React from "react";
 import _ from "lodash";
 import "./App.css";
-
 const classCapacity = {
-  EAB415: [15, 10],
-  EAB416: [15, 10],
-  WAB412: [15, 10],
-  EAB310: [10, 4],
+  // EAB415: [15, 10],
+  // EAB416: [15, 10],
+  WAB412: [10, 5],
+  // EAB310: [10, 4],
+  EAB217: [10, 4],
   EAB304: [10, 4],
-  EAB303: [10, 4],
-  EAB306: [10, 4],
-  EAB206: [10, 4],
-  EAB203: [10, 4],
-  EAB204: [10, 4],
+  EAB303: [11, 4],
+  //EAB306: [9, 4], → S7
+  //EAB206: [11, 4], → S7
+  //EAB203: [11, 4], → S7
+  WAB206: [12, 4],
+  ADM303: [12, 4],
+  ADM304: [12, 4],
+  ADM305: [12, 4],
+  ADM306: [12, 4],
+  WAB106: [12, 4],
+  EAB204: [11, 4],
   EAB103: [10, 4],
   EAB106: [10, 4],
   EAB104: [10, 4],
   EAB407: [10, 4],
   EAB405: [10, 4],
-  EAB401: [10, 4],
-  WAB105: [10, 4],
-  WAB106: [10, 4],
-  WAB107: [10, 4],
-  WAB210: [10, 4],
-  WAB207: [10, 4],
-  WAB206: [10, 4],
-  WAB205: [10, 4],
+  //EAB401: [11, 4], → S7
+  WAB105: [15, 4],
+  //WAB107: [8, 4], → S7
+  //WAB207: [13, 4], → S7
+  ADM307: [11, 4],
+  ADM308: [11, 4],
+  ADM309: [11, 4],
+  ADM310: [11, 4],
+  WAB205: [11, 4],
   WAB406: [10, 4],
   WAB403: [10, 4],
   WAB405: [10, 4],
   WAB305: [10, 4],
   WAB304: [10, 4],
-  ADM303: [10, 4],
-  ADM304: [10, 4],
-  ADM305: [10, 4],
-  ADM306: [10, 4],
-  ADM307: [10, 4],
-  ADM308: [10, 4],
-  ADM309: [10, 4],
-  ADM310: [10, 4],
-  ADM311: [10, 4],
+  WAB210: [10, 4],
+  EAB112: [7, 4],
+  WAB404: [8, 4],
+  ADM311: [9, 4],
 };
 
 let deptStrength = {
@@ -59,7 +61,7 @@ let deptStrength = {
   "21ME": 34,
   "21MR": 24,
   "21RA": 15,
-  "22AD": 61,
+  "22AD": 16,
   "22CE": 20,
   "22CS": 121,
   "22EC": 51,
@@ -78,6 +80,7 @@ let deptStrength = {
   "23MR": 34,
 };
 let letStrength = {
+  //S1
   "24CS": 0,
   "24AD": 0,
   "24CE": 0,
@@ -86,6 +89,7 @@ let letStrength = {
   "24ME": 0,
   "24MR": 0,
   "24RA": 0,
+  //S7
   "21AD": 3,
   "21CE": 17,
   "21CS": 3,
@@ -94,6 +98,7 @@ let letStrength = {
   "21ME": 23,
   "21MR": 2,
   "21RA": 1,
+  //S5  ---------------> No changes from previous data
   "22AD": 3,
   "22CE": 11,
   "22CS": 3,
@@ -101,16 +106,17 @@ let letStrength = {
   "22EE": 15,
   "22ME": 20,
   "22MR": 5,
-  "23RA": 0,
   "22RA": 0,
-  "23AD": 3,
+  //S3
+  "23AD": 3, 
   "23CE": 9,
   "23CS": 7,
-  "23CSE(Y)": 0,
-  "23EC": 0,
-  "23EE": 15,
-  "23ME": 20,
-  "23MR": 9,
+  "23CSE(Y)": 3, // confusion 0 here
+  "23EC": 10,
+  "23EE": 17,
+  "23ME": 21,
+  "23MR": 10,
+  "23RA": 0, //stopped
 };
 
 let exams = {
@@ -140,14 +146,38 @@ let exams = {
   "22RA": ["HUT300", "HUT310", "MCN301"],
 };
 
-let sup = {};
-
-const slots = {
-  E: ["HUT300", "HUT310", "HUT200", "EST200","CET309","CST309"],
+let sup = {
+  CST309: ["JEC22ES001", "JEC22ES002", "JEC22ES003"],
 };
 
+let drop = [
+  "JEC23CE004",
+  "JEC23CS080",
+  "JEC23ME007",
+  "JEC23ME027",
+  "JEC22ME013",
+  "JEC22CS044",
+  "JEC22CS059",
+  "JEC22CS084",
+  "JEC22CS117",
+  "LJEC22EE050",
+  "JEC22ME007",
+  "JEC22ME010",
+  "LJEC22ME057",
+  "JEC22MC022",
+];
+
+const rejoin = {
+  "23CS": ["JEC22CS059", "JEC22CS117"],
+};
+
+const slots = {
+  E: ["HUT300", "HUT310", "HUT200", "EST200", "CET309", "CST309"],
+};
 //selecting the slot for locating the subjects to be written on that day
 const examToday = slots.E;
+
+let examsCopy = exams;
 function mergeExamSchedules(exams) {
   let updatedExams = {};
   for (let key in exams) {
@@ -168,27 +198,27 @@ function mergeExamSchedules(exams) {
   else return updatedExams;
 }
 
-exams = mergeExamSchedules(exams);
+exams = mergeExamSchedules(exams, sup);
 
 //necessary indices and arrays
 let class_index = 0,
   classes = [],
   lastIndex = 0,
   data = [],
-  supIndex = 0;
-
-
+  supIndex = 0,
+  rejoinIndex = 0;
 
 const updateDeptStrength = (deptStrength, letStrength) => {
   const updatedDeptStrength = {};
   for (const dept in deptStrength) {
-    updatedDeptStrength[dept] = deptStrength[dept] + (letStrength[dept] || 0);
+    const rejoinStrength = rejoin[dept] ? rejoin[dept].length : 0;
+    updatedDeptStrength[dept] =
+      deptStrength[dept] + (letStrength[dept] || 0) + rejoinStrength;
   }
   return updatedDeptStrength;
 };
 
 deptStrength = updateDeptStrength(deptStrength, letStrength);
-
 
 const getDepartmentDetails = (departments) => {
   const deptStrengthMap = new Map();
@@ -208,9 +238,6 @@ const getDepartmentDetails = (departments) => {
     .map(([dept, strength]) => `${dept} - ${strength} `)
     .join(" || ");
 };
-
-
-
 
 //for initializing classes
 const classNames = Object.keys(classCapacity);
@@ -329,16 +356,16 @@ function viewExams(examToday, exams, deptStrength) {
       resultArray[exam] = subArray;
     });
   });
+
   viewResultArray = resultArray;
 }
-viewExams(examToday, exams, deptStrength);
+viewExams(examToday, examsCopy, deptStrength);
 //Normal grouping of departments
 function dataArrayMaker(examToday, exams, deptStrength) {
   const resultArray = {};
 
   const deptList = Object.keys(exams);
   const subList = Object.values(exams);
-  const supplySubs = Object.keys(sup);
   const deptSet = new Set();
 
   examToday.forEach((exam) => {
@@ -353,13 +380,6 @@ function dataArrayMaker(examToday, exams, deptStrength) {
       }
     });
 
-    supplySubs.forEach((supplySub, index) => {
-      if (supplySub.includes(exam)) {
-        let supply_num = sup[supplySub].length;
-        subArray.push([`SUP_${exam}`, supply_num]);
-      }
-    });
-
     if (subArray.length > 0) {
       resultArray[exam] = subArray;
     }
@@ -370,6 +390,7 @@ function dataArrayMaker(examToday, exams, deptStrength) {
       delete resultArray[key];
     }
   });
+  // console.log(resultArray);
 
   optimizer(arraySorter(resultArray), 2);
   optimizer(arraySorter(resultArray), 1);
@@ -377,16 +398,21 @@ function dataArrayMaker(examToday, exams, deptStrength) {
   return data;
 }
 data = dataArrayMaker(examToday, exams, deptStrength);
-
+const rejoinKeys = Object.keys(rejoin);
 const splitString = (str) => {
   const match = str.match(/^(\d+)([A-Za-z]+)(\d+)$/);
 
   if (match) {
     const deptCode = match[1] + match[2];
     const value = parseInt(match[3], 10);
-
+    let tLength;
     if (deptStrength.hasOwnProperty(deptCode)) {
-      const difference = deptStrength[deptCode] - (letStrength[deptCode] || 0);
+      if (rejoinKeys.includes(deptCode)) {
+        tLength = letStrength[deptCode] + rejoin[deptCode].length;
+      } else {
+        tLength = letStrength[deptCode];
+      }
+      const difference = deptStrength[deptCode] - tLength || 0;
       return difference >= value;
     }
     return false;
@@ -408,7 +434,6 @@ function formatToThreeDigits(number) {
 
 const seatArr = (n, sub, b1) => {
   if (n === 0) return;
-  let sNum = "";
   let num = 1;
   let benchIndex = b1 % 2 === 0 ? evenBenchIndex : oddBenchIndex;
   let rowIndex = b1 % 2 === 0 ? evenRowIndex : oddRowIndex;
@@ -417,19 +442,45 @@ const seatArr = (n, sub, b1) => {
     const supSub = sub.substring(4);
     supRollNum = sup[supSub];
   }
+  const rejoinDept = Object.keys(rejoin);
+  let rejoinLength;
+  let rejoinList;
+  let rejoinStr;
+  if (rejoinDept.includes(sub)) {
+    rejoinList = rejoin[sub];
+    rejoinLength = rejoinList.length;
+    rejoinStr = n - rejoinLength;
+  }
 
   for (let Class = classIndex; Class < classes.length; Class++) {
     const currentClass = classes[Class];
     for (let j = benchIndex; j < currentClass[0].length; j += 2) {
       for (let i = rowIndex; i < currentClass.length; i++) {
+        let flag = true;
         if (sub.includes("SUP")) {
           currentClass[i][j] = supRollNum[supIndex];
           supIndex++;
           if (n === supIndex) {
             supIndex = 0;
+            num = n;
+          }
+        } else if (rejoinDept.includes(sub) && n - (rejoinLength - 1) === num) {
+          currentClass[i][j] = rejoinList[rejoinIndex];
+          rejoinIndex++;
+          rejoinLength--;
+          if (rejoinLength === 0) {
+            num = n;
           }
         } else {
-          sNum = formatToThreeDigits(num);
+          let sNum = formatToThreeDigits(num);
+          while (
+            drop.includes("JEC" + sub.concat(sNum)) ||
+            drop.includes("LJEC" + sub.concat(sNum))
+          ) {
+            sNum = formatToThreeDigits(num);
+            num++;
+            flag = false;
+          }
           if (splitString(sub.concat(sNum)) == true) {
             currentClass[i][j] = "JEC" + sub.concat(sNum);
           } else {
@@ -438,12 +489,21 @@ const seatArr = (n, sub, b1) => {
         }
 
         if (num === n) {
+          let n1, n2;
+          if (currentClass[0].length % 2 === 0) {
+            n1 = 2;
+            n2 = 1;
+          } else {
+            n1 = 1;
+            n2 = 2;
+          }
           if (i === currentClass.length - 1 && b1 % 2 === 0) {
             evenRowIndex = 0;
             evenBenchIndex = j + 2;
+
             if (
               currentClass[currentClass.length - 1][
-                currentClass[0].length - 2
+                currentClass[0].length - n1
               ] !== 0
             ) {
               evenClassIndex = Class + 1;
@@ -459,7 +519,7 @@ const seatArr = (n, sub, b1) => {
             oddBenchIndex = j + 2;
             if (
               currentClass[currentClass.length - 1][
-                currentClass[0].length - 1
+                currentClass[0].length - n2
               ] !== 0
             ) {
               oddClassIndex = Class + 1;
@@ -481,11 +541,12 @@ const seatArr = (n, sub, b1) => {
           }
           return;
         }
+
         if (i === currentClass.length - 1) {
           benchIndex = b1 % 2 === 0 ? 0 : 1;
           rowIndex = 0;
         }
-        num++;
+        if (flag) num++;
       }
     }
   }
@@ -501,6 +562,7 @@ for (const [dept, num] of data) {
   }
   subjectAllotedNum++;
 }
+
 
 const consolidateItems = (items) => {
   const groupedItems = {};
@@ -526,11 +588,50 @@ const consolidateItems = (items) => {
 
 const calculateCounts = (items) => {
   const counts = [];
+
   for (let i = 1; i < items.length; i += 2) {
     const num1 = parseInt(items[i].slice(-3));
     const num0 = parseInt(items[i - 1].slice(-3));
-    counts.push(num1 - num0 + 1);
+    const match = items[i].match(/^L?JEC(\d{2})([A-Z]{2})\d{3}$/);
+    let dropCount = 0;
+    let flag = false;
+    let result;
+    if (match) {
+      result = `${match[1]}${match[2]}`;
+      for (let j = num0; j < num1; j++) {
+        if (
+          drop.includes("JEC" + result + formatToThreeDigits(j)) ||
+          drop.includes("LJEC" + result + formatToThreeDigits(j))
+        ) {
+          flag = true;
+          dropCount++;
+        }
+      }
+      if (!flag) {
+        counts.push(num1 - num0 + 1);
+      } else {
+        let inRejoinAndDrop = false;
+        const rejoinKey = Object.keys(rejoin).find((key) =>
+          rejoin[key].includes("JEC" + result + formatToThreeDigits(num1))
+        );
+        if (
+          rejoinKey &&
+          rejoin[rejoinKey].some((item) => drop.includes(item))
+        ) {
+          inRejoinAndDrop = true;
+        }
+
+        if (inRejoinAndDrop && rejoinKey !== result) {
+          counts.push(num1 - num0 + 1);
+        } else {
+          counts.push(num1 - num0 + 1 - dropCount);
+        }
+
+        dropCount = 0;
+      }
+    }
   }
+
   return counts;
 };
 
@@ -545,75 +646,83 @@ const noticeBoardView = classes.map((cls, idx) => {
     count: counts,
   };
 });
+// console.log(noticeBoardView);
 
-function organizeByDept(classes, data, classCapacity, letStrength) {
-  let classNames = Object.keys(classCapacity);
-  let mainArray = [];
-  let array = data;
-  let subArrayToRemove = ["DUM", 0];
-  let keys = ["dept", "rooms", "rollNums", "count"];
-  array = array.filter(
-    (subArray) => JSON.stringify(subArray) !== JSON.stringify(subArrayToRemove)
-  );
-  array.forEach((dept) => {
-    let strength = dept[1];
-    let letCount = letStrength[dept[0]];
-    let realStrength = strength - letCount;
+const extractDepartmentYear = (rollNo) => {
+  const match = rollNo.match(/L?JEC(\d{2})([A-Z]{2})/);
+  return match ? `${match[1]}${match[2]}` : null;
+};
+const organizeByDept = (data) => {
+  const deptMap = {};
 
-    let rollNums = [];
-    let count = [];
-    let rooms = [];
-    let depObj = {};
-    depObj.dept = dept[0];
-    classes.forEach((Class, index) => {
-      let individualList = Class.flat(2);
-      let cnt = 0;
-      individualList = individualList.filter((item) => item !== 0);
-      individualList.forEach((str) => {
-        if (str.includes(dept[0])) cnt++;
-      });
-      if (cnt != 0) count.push(cnt);
+  data.forEach(({ class: room, items }) => {
+    items.forEach((rollNo) => {
+      let deptYear = extractDepartmentYear(rollNo);
+      if (!deptYear) return;
 
-      if (individualList.some((str) => str.includes(dept[0])))
-        rooms.push(classNames[index]);
-    });
-
-    let firstRollNo = 1;
-    count.forEach((num) => {
-      let secondRollNo = firstRollNo + num - 1;
-      if (firstRollNo > realStrength) {
-        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
-        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
-      } else if (secondRollNo > realStrength) {
-        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
-        rollNums.push(`LJECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
-      } else {
-        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(firstRollNo)}`);
-        rollNums.push(`JECC${dept[0]}${formatToThreeDigits(secondRollNo)}`);
+      // Check if the roll number should be moved to a different department
+      for (const [newDeptYear, rejoinList] of Object.entries(rejoin)) {
+        if (rejoinList.includes(rollNo)) {
+          deptYear = newDeptYear;
+          break;
+        }
       }
-      firstRollNo = secondRollNo + 1;
+
+      if (!deptMap[deptYear]) {
+        deptMap[deptYear] = [];
+      }
+
+      deptMap[deptYear].push({ room, rollNo });
     });
-    depObj.count = count;
-    depObj.rooms = rooms;
-    depObj.rollNums = rollNums;
-    mainArray.push(depObj);
   });
-  mainArray.sort((a, b) => {
-    let deptA = a.dept.match(/\d+/)[0];
-    let deptB = b.dept.match(/\d+/)[0];
 
-    let prefixA = a.dept.match(/[A-Z]+/)[0];
-    let prefixB = b.dept.match(/[A-Z]+/)[0];
+  const result = Object.keys(deptMap).map((deptYear) => {
+    const rooms = [];
+    const rollNums = [];
 
+    // Iterate through the roll numbers and group by pairs
+    for (let i = 0; i < deptMap[deptYear].length; i += 2) {
+      const { room: room1, rollNo: rollNo1 } = deptMap[deptYear][i];
+      const { room: room2, rollNo: rollNo2 } = deptMap[deptYear][i + 1] || {};
+
+      // Only push one room per pair
+      rooms.push(room1);
+      rollNums.push(rollNo1, rollNo2);
+    }
+
+    // Calculate the counts using the calculateCounts function
+    const counts = calculateCounts(rollNums);
+
+    return {
+      dept: deptYear,
+      rooms,
+      rollNums,
+      count: counts,
+    };
+  });
+
+  // Change the sorting code here
+  result.sort((a, b) => {
+    // Extract the numeric part of the department
+    const deptA = parseInt(a.dept.match(/\d+/)[0]); // Extracts the number part (e.g., "23")
+    const deptB = parseInt(b.dept.match(/\d+/)[0]);
+
+    // Extract the alphabetic part of the department
+    const prefixA = a.dept.match(/[A-Z]+/)[0]; // Extracts the alphabetic part (e.g., "CS")
+    const prefixB = b.dept.match(/[A-Z]+/)[0];
+
+    // Compare by prefix first (alphabetically)
     if (prefixA < prefixB) return -1;
     if (prefixA > prefixB) return 1;
 
+    // If prefixes are the same, compare by the numeric part (ascending order)
     return deptA - deptB;
   });
-  return mainArray;
-}
 
-const deptView = organizeByDept(classes, data, classCapacity, letStrength);
+  return result;
+};
+const deptView = organizeByDept(noticeBoardView);
+console.log(deptView);
 
 const classroomView = (data) => {
   const numRows = data.length;
@@ -680,12 +789,7 @@ const App = () => {
           ))}
         </ul>
       </div>
-      <div>
-        <h3 style={{ color: "lightgreen" }}>
-          Neighbouring Seats left empty -{" "}
-          {Math.abs(strengthCalculator(0, data) - strengthCalculator(1, data))}
-        </h3>
-      </div>
+  
 
       <div>
         <h1>Notice Board</h1>
@@ -753,7 +857,7 @@ const App = () => {
             })}
           </tbody>
         </table>
-      </div>
+      </div> 
       <div>
         <h1>Classroom Door View</h1>
 
@@ -772,7 +876,7 @@ const App = () => {
                       )
                     )}
                     {cls[0].map((_, colIndex) =>
-                      colIndex % 2 === 0 ? (
+                      colIndex % 2 !== 0 ? (
                         <th key={colIndex}>Seat No</th>
                       ) : (
                         <th key={colIndex}>Register No</th>
