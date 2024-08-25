@@ -66,7 +66,7 @@ let deptStrength = {
   "22CS": 121,
   "22EC": 51,
   "22EE": 35,
-  "22ME": 34,
+  "22ME": 37,
   "22MR": 24,
   "22RA": 15,
   "23AD": 56,
@@ -104,11 +104,11 @@ let letStrength = {
   "22CS": 3,
   "22EC": 6,
   "22EE": 15,
-  "22ME": 20,
+  "22ME": 21,
   "22MR": 5,
   "22RA": 0,
   //S3
-  "23AD": 3, 
+  "23AD": 3,
   "23CE": 9,
   "23CS": 7,
   "23CSE(Y)": 3, // confusion 0 here
@@ -147,7 +147,13 @@ let exams = {
 };
 
 let sup = {
-  CST309: ["JEC22ES001", "JEC22ES002", "JEC22ES003"],
+  // CST309: [
+  //   "JEC22ES010",
+  //   "JEC22ES011",
+  //   "JEC22ES015",
+  //   "JEC22ES160",
+  //   "JEC22ES170",
+  // ],
 };
 
 let drop = [
@@ -178,6 +184,14 @@ const slots = {
 const examToday = slots.E;
 
 let examsCopy = exams;
+
+Object.keys(sup).forEach((key) => {
+  exams[`SUP_${key}`] = [key];
+});
+Object.keys(sup).forEach((key) => {
+  deptStrength[`SUP_${key}`] = sup[key].length;
+});
+
 function mergeExamSchedules(exams) {
   let updatedExams = {};
   for (let key in exams) {
@@ -201,8 +215,7 @@ function mergeExamSchedules(exams) {
 exams = mergeExamSchedules(exams, sup);
 
 //necessary indices and arrays
-let class_index = 0,
-  classes = [],
+let classes = [],
   lastIndex = 0,
   data = [],
   supIndex = 0,
@@ -390,35 +403,12 @@ function dataArrayMaker(examToday, exams, deptStrength) {
       delete resultArray[key];
     }
   });
-  // console.log(resultArray);
 
   optimizer(arraySorter(resultArray), 2);
   optimizer(arraySorter(resultArray), 1);
-
   return data;
 }
 data = dataArrayMaker(examToday, exams, deptStrength);
-const rejoinKeys = Object.keys(rejoin);
-const splitString = (str) => {
-  const match = str.match(/^(\d+)([A-Za-z]+)(\d+)$/);
-
-  if (match) {
-    const deptCode = match[1] + match[2];
-    const value = parseInt(match[3], 10);
-    let tLength;
-    if (deptStrength.hasOwnProperty(deptCode)) {
-      if (rejoinKeys.includes(deptCode)) {
-        tLength = letStrength[deptCode] + rejoin[deptCode].length;
-      } else {
-        tLength = letStrength[deptCode];
-      }
-      const difference = deptStrength[deptCode] - tLength || 0;
-      return difference >= value;
-    }
-    return false;
-  }
-  return false;
-};
 
 let evenBenchIndex = 0;
 let oddBenchIndex = 1;
@@ -443,7 +433,7 @@ const seatArr = (n, sub, b1) => {
     supRollNum = sup[supSub];
   }
   const rejoinDept = Object.keys(rejoin);
-  let rejoinLength;
+  let rejoinLength = 0;
   let rejoinList;
   let rejoinStr;
   if (rejoinDept.includes(sub)) {
@@ -451,7 +441,6 @@ const seatArr = (n, sub, b1) => {
     rejoinLength = rejoinList.length;
     rejoinStr = n - rejoinLength;
   }
-
   for (let Class = classIndex; Class < classes.length; Class++) {
     const currentClass = classes[Class];
     for (let j = benchIndex; j < currentClass[0].length; j += 2) {
@@ -477,17 +466,18 @@ const seatArr = (n, sub, b1) => {
             drop.includes("JEC" + sub.concat(sNum)) ||
             drop.includes("LJEC" + sub.concat(sNum))
           ) {
-            sNum = formatToThreeDigits(num);
             num++;
-            flag = false;
+            sNum = formatToThreeDigits(num);
           }
-          if (splitString(sub.concat(sNum)) == true) {
+          if (num <= deptStrength[sub] - (letStrength[sub] + rejoinLength)) {
             currentClass[i][j] = "JEC" + sub.concat(sNum);
           } else {
             currentClass[i][j] = "LJEC" + sub.concat(sNum);
           }
+          if (num > n) {
+            num--;
+          }
         }
-
         if (num === n) {
           let n1, n2;
           if (currentClass[0].length % 2 === 0) {
@@ -546,7 +536,7 @@ const seatArr = (n, sub, b1) => {
           benchIndex = b1 % 2 === 0 ? 0 : 1;
           rowIndex = 0;
         }
-        if (flag) num++;
+        num++;
       }
     }
   }
@@ -562,7 +552,6 @@ for (const [dept, num] of data) {
   }
   subjectAllotedNum++;
 }
-
 
 const consolidateItems = (items) => {
   const groupedItems = {};
@@ -586,15 +575,22 @@ const consolidateItems = (items) => {
   });
 };
 
-const calculateCounts = (items) => {
+// const rejoin = {
+//   "23CS": ["JEC22CS059", "JEC22CS117"],
+// };
+
+const calculateCounts = (items, sup) => {
   const counts = [];
 
   for (let i = 1; i < items.length; i += 2) {
     const num1 = parseInt(items[i].slice(-3));
     const num0 = parseInt(items[i - 1].slice(-3));
     const match = items[i].match(/^L?JEC(\d{2})([A-Z]{2})\d{3}$/);
-    let dropCount = 0;
+    let dropCount = 0,
+      supCount = 0;
     let flag = false;
+    const supArray = Object.values(sup).flat();
+
     let result;
     if (match) {
       result = `${match[1]}${match[2]}`;
@@ -606,9 +602,20 @@ const calculateCounts = (items) => {
           flag = true;
           dropCount++;
         }
+        if (
+          supArray.includes("JEC" + result + formatToThreeDigits(j)) ||
+          supArray.includes("LJEC" + result + formatToThreeDigits(j))
+        ) {
+          supCount++;
+        }
       }
       if (!flag) {
-        counts.push(num1 - num0 + 1);
+        if (supCount == 0) {
+          counts.push(num1 - num0 + 1);
+        } else {
+          counts.push(supCount + 1);
+          supCount = 0;
+        }
       } else {
         let inRejoinAndDrop = false;
         const rejoinKey = Object.keys(rejoin).find((key) =>
@@ -622,7 +629,7 @@ const calculateCounts = (items) => {
         }
 
         if (inRejoinAndDrop && rejoinKey !== result) {
-          counts.push(num1 - num0 + 1);
+          counts.push(dropCount);
         } else {
           counts.push(num1 - num0 + 1 - dropCount);
         }
@@ -638,7 +645,7 @@ const calculateCounts = (items) => {
 const noticeBoardView = classes.map((cls, idx) => {
   const allItems = cls.flat();
   const consolidatedItems = consolidateItems(allItems);
-  const counts = calculateCounts(consolidatedItems);
+  const counts = calculateCounts(consolidatedItems, sup);
 
   return {
     class: classNames[idx],
@@ -691,7 +698,7 @@ const organizeByDept = (data) => {
     }
 
     // Calculate the counts using the calculateCounts function
-    const counts = calculateCounts(rollNums);
+    const counts = calculateCounts(rollNums, sup);
 
     return {
       dept: deptYear,
@@ -722,7 +729,6 @@ const organizeByDept = (data) => {
   return result;
 };
 const deptView = organizeByDept(noticeBoardView);
-console.log(deptView);
 
 const classroomView = (data) => {
   const numRows = data.length;
@@ -789,7 +795,6 @@ const App = () => {
           ))}
         </ul>
       </div>
-  
 
       <div>
         <h1>Notice Board</h1>
@@ -857,7 +862,7 @@ const App = () => {
             })}
           </tbody>
         </table>
-      </div> 
+      </div>
       <div>
         <h1>Classroom Door View</h1>
 
