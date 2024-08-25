@@ -875,20 +875,11 @@ const App = () => {
               <table border="1">
                 <thead>
                   <tr>
-                    {cls[0].map((_, colIndex) =>
-                      colIndex % 2 === 0 ? (
-                        <th key={colIndex}>Seat No</th>
-                      ) : (
-                        <th key={colIndex}>Register No</th>
-                      )
-                    )}
-                    {cls[0].map((_, colIndex) =>
-                      colIndex % 2 !== 0 ? (
-                        <th key={colIndex}>Seat No</th>
-                      ) : (
-                        <th key={colIndex}>Register No</th>
-                      )
-                    )}
+                    {[...cls[0], ...cls[0]].map((_, colIndex) => (
+                      <th key={colIndex}>
+                        {colIndex % 2 === 0 ? "Seat No" : "Register No"}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
