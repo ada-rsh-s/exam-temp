@@ -94,3 +94,37 @@ td {
     font-size: 12px;
   }
 }
+
+
+/* Basic button style */
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #66a5ea; /* Primary color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 50px;
+  margin-bottom: 20px;
+}
+
+/* Hover effect */
+.button:hover {
+  background-color: #0056b3; /* Darker shade for hover */
+  transform: scale(1.05); /* Slightly enlarge button */
+}
+
+/* Active state */
+.button:active {
+  background-color: #004085; /* Even darker shade when pressed */
+  transform: scale(0.98); /* Slightly shrink button */
+}
+
+/*

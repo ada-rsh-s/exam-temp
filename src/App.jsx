@@ -1,6 +1,13 @@
-import React from "react";
-import _ from "lodash";
+import { useState } from "react";
 import "./App.css";
+import Home from "./Home";
+import { BrowserRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
+import { Routes } from "react-router-dom";
+import { Route } from "react-router-dom";
+import _ from "lodash";
+import ClassTable from "./ClassTable";
+import { useNavigate } from "react-router-dom";
 
 const classCapacity = {
   // EAB415: [15, 10],
@@ -19,6 +26,11 @@ const classCapacity = {
   ADM305: [12, 4],
   ADM306: [12, 4],
   WAB106: [12, 4],
+  ADM307: [11, 4],
+  ADM308: [11, 4],
+  ADM309: [11, 4],
+  ADM310: [11, 4],
+  WAB205: [11, 4],
   EAB204: [11, 4],
   EAB103: [10, 4],
   EAB106: [10, 4],
@@ -26,14 +38,9 @@ const classCapacity = {
   EAB407: [10, 4],
   EAB405: [10, 4],
   //EAB401: [11, 4], → S7
-  WAB105: [15, 4],
+  WAB105: [10, 4],
   //WAB107: [8, 4], → S7
   //WAB207: [13, 4], → S7
-  ADM307: [11, 4],
-  ADM308: [11, 4],
-  ADM309: [11, 4],
-  ADM310: [11, 4],
-  WAB205: [11, 4],
   WAB406: [10, 4],
   WAB403: [10, 4],
   WAB405: [10, 4],
@@ -52,7 +59,7 @@ let deptStrength = {
   "24EC": 0,
   "24EE": 0,
   "24ME": 0,
-  "24MR": 0,
+  "24MC": 0,
   "24RA": 0,
   "21AD": 52,
   "21CE": 26,
@@ -60,7 +67,7 @@ let deptStrength = {
   "21EC": 35,
   "21EE": 26,
   "21ME": 34,
-  "21MR": 24,
+  "21MC": 24,
   "21RA": 15,
   "22AD": 61,
   "22CE": 20,
@@ -68,7 +75,7 @@ let deptStrength = {
   "22EC": 51,
   "22EE": 35,
   "22ME": 37,
-  "22MR": 25,
+  "22MC": 25,
   "22RA": 15,
   "23AD": 56,
   "23CE": 19,
@@ -78,7 +85,7 @@ let deptStrength = {
   "23EC": 44,
   "23EE": 28,
   "23ME": 30,
-  "23MR": 34,
+  "23MC": 34,
 };
 let letStrength = {
   //S1
@@ -88,7 +95,7 @@ let letStrength = {
   "24EC": 0,
   "24EE": 0,
   "24ME": 0,
-  "24MR": 0,
+  "24MC": 0,
   "24RA": 0,
   //S7
   "21AD": 3,
@@ -97,7 +104,7 @@ let letStrength = {
   "21EC": 8,
   "21EE": 8,
   "21ME": 23,
-  "21MR": 2,
+  "21MC": 2,
   "21RA": 1,
   //S5  ---------------> No changes from previous data
   "22AD": 3,
@@ -106,17 +113,17 @@ let letStrength = {
   "22EC": 6,
   "22EE": 15,
   "22ME": 21,
-  "22MR": 5,
+  "22MC": 5,
   "22RA": 0,
   //S3
   "23AD": 3,
   "23CE": 9,
-  "23CS": 7,
+  "23CS": 9,
   "23CC": 2, // confusion 0 here
   "23EC": 10,
-  "23EE": 17,
-  "23ME": 21,
-  "23MR": 10,
+  "23EE": 19,
+  "23ME": 22,
+  "23MC": 10,
   "23RA": 0, //stopped
 };
 
@@ -127,7 +134,7 @@ let exams = {
   "24EC": ["HUN101"],
   "24EE": ["HUN101"],
   "24ME": ["HUN101"],
-  "24MR": ["HUN101"],
+  "24MC": ["HUN101"],
   "24RA": ["HUN101"],
   "23AD": ["EST200", "HUT200", "MCN201"],
   "23CE": ["EST200", "HUT200", "MCN201"],
@@ -136,7 +143,7 @@ let exams = {
   "23EC": ["EST200", "HUT200", "MCN201"],
   "23EE": ["EST200", "HUT200", "MCN201"],
   "23ME": ["EST200", "HUT200", "MCN201"],
-  "23MR": ["EST200", "HUT200", "MCN201"],
+  "23MC": ["EST200", "HUT200", "MCN201"],
   "23RA": ["EST200", "HUT200", "MCN201"],
   "22AD": ["CST309", "MCN301"],
   "22CE": ["CET309", "MCN301"],
@@ -144,7 +151,7 @@ let exams = {
   "22EC": ["HUT300", "HUT310", "MCN301"],
   "22EE": ["HUT300", "HUT310", "MCN301"],
   "22ME": ["HUT300", "HUT310", "MCN301"],
-  "22MR": ["HUT300", "HUT310", "MCN301"],
+  "22MC": ["HUT300", "HUT310", "MCN301"],
   "22RA": ["HUT300", "HUT310", "MCN301"],
 };
 
@@ -179,9 +186,11 @@ const rejoin = {
   "23CS": ["JEC22CS059", "JEC22CS117"],
 };
 
-const slots = {
+export const slots = {
   E: ["HUT300", "HUT310", "HUT200", "EST200", "CET309", "CST309"],
+  F: ["MCN201", "MCN301"],
 };
+
 //selecting the slot for locating the subjects to be written on that day
 const examToday = slots.E;
 
@@ -235,7 +244,7 @@ const updateDeptStrength = (deptStrength, letStrength) => {
 
 deptStrength = updateDeptStrength(deptStrength, letStrength);
 
-const getDepartmentDetails = (departments) => {
+export const getDepartmentDetails = (departments) => {
   const deptStrengthMap = new Map();
 
   departments.forEach(([department, strength]) => {
@@ -767,7 +776,7 @@ const classroomView = (data) => {
 //   });
 // });
 
-const createItemPairs = (items) => {
+export const createItemPairs = (items) => {
   const pairs = [];
   for (let i = 0; i < items.length - 1; i += 2) {
     if (i + 1 < items.length) {
@@ -777,133 +786,32 @@ const createItemPairs = (items) => {
   return pairs;
 };
 
-const App = () => {
+const homeData = {
+  examToday,
+  viewResultArray,
+  noticeBoardView,
+  deptView,
+  classNames,
+};
+
+function App() {
+ 
+
   return (
     <>
-      <div>
-        <h3 style={{ color: "green" }}>
-          Today's Exams - {examToday.join(", ")}
-        </h3>
-      </div>
-
-      <div>
-        <ul>
-          {Object.entries(viewResultArray).map(([subject, departments]) => (
-            <li style={{ fontWeight: "500" }} key={subject}>
-              {subject} writing by {getDepartmentDetails(departments)} Students
-              <br />
-              <br />
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div>
-        <h1>Notice Board</h1>
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th>Class</th>
-              <th>Register No</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {noticeBoardView.map(
-              ({ class: className, items, count }, classIndex) => {
-                const pairs = createItemPairs(items);
-                const rowSpan = pairs.length || 1;
-
-                return pairs.length > 0 ? (
-                  pairs.map((pair, pairIndex) => (
-                    <tr key={`${className}-${pairIndex}`}>
-                      {pairIndex === 0 && (
-                        <td rowSpan={rowSpan}>{className}</td>
-                      )}
-                      <td>{pair}</td>
-                      <td>{count[pairIndex] || "-"}</td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr key={classIndex}>
-                    <td>{className}</td>
-                    <td>EMPTY</td>
-                    <td>-</td>
-                  </tr>
-                );
-              }
-            )}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <h1>Department View</h1>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Department</th>
-              <th>Room</th>
-              <th>Roll Numbers</th>
-              <th>Count</th>
-            </tr>
-          </thead>
-          <tbody>
-            {deptView.map((item, index) => {
-              const pairs = createItemPairs(item.rollNums);
-              return item.rooms.map((room, roomIndex) => (
-                <tr key={`${index}-${roomIndex}`}>
-                  {roomIndex === 0 ? (
-                    <td rowSpan={item.rooms.length}>{item.dept}</td>
-                  ) : null}
-                  <td>{room}</td>
-                  <td>{pairs[roomIndex] || "-"}</td>
-                  <td>{item.count[roomIndex]}</td>
-                </tr>
-              ));
-            })}
-          </tbody>
-        </table>
-      </div>
-      <div>
-        <h1>Classroom Door View</h1>
-
-        {classes.map((cls, idx) => (
-          <div key={idx}>
-            <h3>{classNames[idx]}</h3>
-            {cls[0][0] !== 0 ? (
-              <table border="1">
-                <thead>
-                  <tr>
-                    {[...cls[0], ...cls[0]].map((_, colIndex) => (
-                      <th key={colIndex}>
-                        {colIndex % 2 === 0 ? "Seat No" : "Register No"}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {classroomView(cls).map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((cell, cellIndex) =>
-                        cell != 0 ? (
-                          <td key={cellIndex}>{cell}</td>
-                        ) : (
-                          <td key={cellIndex}>Empty</td>
-                        )
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <div>Empty Class</div>
-            )}
-          </div>
-        ))}
-      </div>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home data={homeData} />} />
+          <Route
+            path="/class-table"
+            element={
+              <ClassTable classes={classes} classroomView={classroomView} />
+            }
+          />
+        </Routes>
+      </BrowserRouter>
     </>
   );
-};
+}
 
 export default App;
