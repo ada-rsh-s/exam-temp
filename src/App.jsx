@@ -127,6 +127,7 @@ let letStrength = {
   "23RA": 0, //stopped
 };
 
+
 let exams = {
   "24CS": ["HUN101"],
   "24AD": ["HUN101"],
@@ -664,7 +665,35 @@ const noticeBoardView = classes.map((cls, idx) => {
     count: counts,
   };
 });
-// console.log(noticeBoardView);
+
+function attendanceSheet(notice) {
+  const newItems = [];
+
+  for (let i = 0; i < notice.items.length; i += 2) {
+    const startItem = notice.items[i];
+    const endItem = notice.items[i + 1];
+
+    const startNumber = parseInt(startItem.slice(-3)); // Get the last 3 digits of start item
+    const endNumber = parseInt(endItem.slice(-3)); // Get the last 3 digits of end item
+    const prefix = startItem.slice(0, -3); // Get the prefix part (e.g., "JEC23AD")
+
+    for (let num = startNumber; num <= endNumber; num++) {
+      const rollNumber = prefix + String(num).padStart(3, "0"); // Generate roll number with leading zeros
+      newItems.push(rollNumber);
+    }
+  }
+
+  return {
+    class: notice.class,
+    items: newItems,
+  };
+}
+
+
+
+noticeBoardView.forEach((notice, idx) => {
+  console.log(attendanceSheet(notice));
+});
 
 const extractDepartmentYear = (rollNo) => {
   const match = rollNo.match(/L?JEC(\d{2})([A-Z]{2})/);
@@ -721,20 +750,23 @@ const organizeByDept = (data) => {
 
   // Change the sorting code here
   result.sort((a, b) => {
-    // Extract the numeric part of the department
-    const deptA = parseInt(a.dept.match(/\d+/)[0]); // Extracts the number part (e.g., "23")
-    const deptB = parseInt(b.dept.match(/\d+/)[0]);
+    // Extract the numeric part of the department (year)
+    const yearA = parseInt(a.dept.match(/\d+/)[0]);
+    const yearB = parseInt(b.dept.match(/\d+/)[0]);
 
-    // Extract the alphabetic part of the department
-    const prefixA = a.dept.match(/[A-Z]+/)[0]; // Extracts the alphabetic part (e.g., "CS")
-    const prefixB = b.dept.match(/[A-Z]+/)[0];
+    // Extract the alphabetic part of the department (department code)
+    const deptA = a.dept.match(/[A-Z]+/)[0];
+    const deptB = b.dept.match(/[A-Z]+/)[0];
 
-    // Compare by prefix first (alphabetically)
-    if (prefixA < prefixB) return -1;
-    if (prefixA > prefixB) return 1;
+    // Compare by year first (ascending order)
+    if (yearA < yearB) return -1;
+    if (yearA > yearB) return 1;
 
-    // If prefixes are the same, compare by the numeric part (ascending order)
-    return deptA - deptB;
+    // If years are the same, compare by department (alphabetically)
+    if (deptA < deptB) return -1;
+    if (deptA > deptB) return 1;
+
+    return 0;
   });
 
   return result;
@@ -795,8 +827,6 @@ const homeData = {
 };
 
 function App() {
- 
-
   return (
     <>
       <BrowserRouter>
