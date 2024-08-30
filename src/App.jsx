@@ -193,7 +193,7 @@ export const slots = {
 };
 
 //selecting the slot for locating the subjects to be written on that day
-const examToday = slots.F;
+const examToday = slots.E;
 
 let examsCopy = exams;
 
