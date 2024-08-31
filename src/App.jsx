@@ -666,6 +666,8 @@ const noticeBoardView = classes.map((cls, idx) => {
   };
 });
 
+
+
 function attendanceSheet(notice) {
   const newItems = [];
 
@@ -691,9 +693,9 @@ function attendanceSheet(notice) {
 
 
 
-noticeBoardView.forEach((notice, idx) => {
-  console.log(attendanceSheet(notice));
-});
+// noticeBoardView.forEach((notice, idx) => {
+//   console.log(attendanceSheet(notice));
+// });
 
 const extractDepartmentYear = (rollNo) => {
   const match = rollNo.match(/L?JEC(\d{2})([A-Z]{2})/);
@@ -762,7 +764,7 @@ const organizeByDept = (data) => {
     if (yearA < yearB) return -1;
     if (yearA > yearB) return 1;
 
-    // If years are the same, compare by department (alphabetically)
+    // If years are the same compare by department (alphabetically)
     if (deptA < deptB) return -1;
     if (deptA > deptB) return 1;
 
@@ -797,9 +799,9 @@ const classroomView = (data) => {
   return updatedData;
 };
 
-// classes.forEach((cls, idx) => {
-// console.log(classroomView(cls));
-// });
+classes.forEach((cls, idx) => {
+console.log(classroomView(cls));
+});
 
 // classes.forEach((cls, idx) => {
 //   console.log(`\n${classNames[idx]}\n`);
