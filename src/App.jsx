@@ -16,25 +16,25 @@ const classCapacity = {
   // EAB310: [10, 4],
   EAB217: [10, 4],
   EAB304: [10, 4],
-  EAB303: [11, 4],
+  EAB303: [10, 4],
   //EAB306: [9, 4], → S7
   //EAB206: [11, 4], → S7
   //EAB203: [11, 4], → S7
-  WAB206: [12, 4],
-  ADM303: [12, 4],
-  ADM304: [12, 4],
-  ADM305: [12, 4],
-  ADM306: [12, 4],
-  WAB106: [12, 4],
-  ADM307: [11, 4],
-  ADM308: [11, 4],
-  ADM309: [11, 4],
-  ADM310: [11, 4],
-  WAB205: [11, 4],
-  EAB204: [11, 4],
+  WAB206: [10, 4],
+  ADM303: [21, 2],
+  ADM304: [10, 4],
+  ADM305: [10, 4],
+  ADM306: [10, 4],
+  WAB106: [10, 4],
+  ADM307: [9, 4],
+  ADM308: [10, 4],
+  ADM309: [10, 4],
+  ADM310: [10, 4],
+  WAB205: [10, 4],
+  EAB204: [10, 4],
   EAB103: [10, 4],
   EAB106: [10, 4],
-  EAB104: [10, 4],
+  EAB104: [7, 6],
   EAB407: [10, 4],
   EAB405: [10, 4],
   //EAB401: [11, 4], → S7
@@ -193,7 +193,7 @@ export const slots = {
 };
 
 //selecting the slot for locating the subjects to be written on that day
-const examToday = slots.E;
+const examToday = slots.F;
 
 let examsCopy = exams;
 
