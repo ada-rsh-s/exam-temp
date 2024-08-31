@@ -127,7 +127,6 @@ let letStrength = {
   "23RA": 0, //stopped
 };
 
-
 let exams = {
   "24CS": ["HUN101"],
   "24AD": ["HUN101"],
@@ -666,36 +665,35 @@ const noticeBoardView = classes.map((cls, idx) => {
   };
 });
 
+function attendanceSheet(singleClass, className) {
+  const oddIndexedStudents = [];
+  const evenIndexedStudents = [];
 
-
-function attendanceSheet(notice) {
-  const newItems = [];
-
-  for (let i = 0; i < notice.items.length; i += 2) {
-    const startItem = notice.items[i];
-    const endItem = notice.items[i + 1];
-
-    const startNumber = parseInt(startItem.slice(-3)); // Get the last 3 digits of start item
-    const endNumber = parseInt(endItem.slice(-3)); // Get the last 3 digits of end item
-    const prefix = startItem.slice(0, -3); // Get the prefix part (e.g., "JEC23AD")
-
-    for (let num = startNumber; num <= endNumber; num++) {
-      const rollNumber = prefix + String(num).padStart(3, "0"); // Generate roll number with leading zeros
-      newItems.push(rollNumber);
+  // Traverse the input column-wise
+  for (let i = 0; i < singleClass[0].length; i++) {
+    for (let j = 0; j < singleClass.length; j++) {
+      if (i % 2 === 0) {
+        evenIndexedStudents.push({ regNo: singleClass[j][i] });
+      } else {
+        oddIndexedStudents.push({ regNo: singleClass[j][i] });
+      }
     }
   }
 
+  // Combine odd and even indexed students
+  const students = [...evenIndexedStudents, ...oddIndexedStudents];
+
   return {
-    class: notice.class,
-    items: newItems,
+    class: className,
+    students: students,
   };
 }
+const attendanceData = classes.map((singleClass, index) => {
+  const className = classNames[index]; // Get the class name for the current index
+  return attendanceSheet(singleClass, className);
+});
+console.log(attendanceData);
 
-
-
-// noticeBoardView.forEach((notice, idx) => {
-//   console.log(attendanceSheet(notice));
-// });
 
 const extractDepartmentYear = (rollNo) => {
   const match = rollNo.match(/L?JEC(\d{2})([A-Z]{2})/);
@@ -709,7 +707,6 @@ const organizeByDept = (data) => {
       let deptYear = extractDepartmentYear(rollNo);
       if (!deptYear) return;
 
-      // Check if the roll number should be moved to a different department
       for (const [newDeptYear, rejoinList] of Object.entries(rejoin)) {
         if (rejoinList.includes(rollNo)) {
           deptYear = newDeptYear;
@@ -729,17 +726,14 @@ const organizeByDept = (data) => {
     const rooms = [];
     const rollNums = [];
 
-    // Iterate through the roll numbers and group by pairs
     for (let i = 0; i < deptMap[deptYear].length; i += 2) {
       const { room: room1, rollNo: rollNo1 } = deptMap[deptYear][i];
       const { room: room2, rollNo: rollNo2 } = deptMap[deptYear][i + 1] || {};
 
-      // Only push one room per pair
       rooms.push(room1);
       rollNums.push(rollNo1, rollNo2);
     }
 
-    // Calculate the counts using the calculateCounts function
     const counts = calculateCounts(rollNums, sup);
 
     return {
@@ -750,21 +744,16 @@ const organizeByDept = (data) => {
     };
   });
 
-  // Change the sorting code here
   result.sort((a, b) => {
-    // Extract the numeric part of the department (year)
     const yearA = parseInt(a.dept.match(/\d+/)[0]);
     const yearB = parseInt(b.dept.match(/\d+/)[0]);
 
-    // Extract the alphabetic part of the department (department code)
     const deptA = a.dept.match(/[A-Z]+/)[0];
     const deptB = b.dept.match(/[A-Z]+/)[0];
 
-    // Compare by year first (ascending order)
     if (yearA < yearB) return -1;
     if (yearA > yearB) return 1;
 
-    // If years are the same compare by department (alphabetically)
     if (deptA < deptB) return -1;
     if (deptA > deptB) return 1;
 
@@ -799,9 +788,9 @@ const classroomView = (data) => {
   return updatedData;
 };
 
-classes.forEach((cls, idx) => {
-console.log(classroomView(cls));
-});
+// classes.forEach((cls, idx) => {
+// console.log(classroomView(cls));
+// });
 
 // classes.forEach((cls, idx) => {
 //   console.log(`\n${classNames[idx]}\n`);
@@ -838,6 +827,39 @@ function App() {
             path="/class-table"
             element={
               <ClassTable classes={classes} classroomView={classroomView} />
+            }
+          />
+          <Route
+            path="/attendance"
+            element={
+              <div>
+                {attendanceData.map((notice, index) => {
+                  return (
+                    <div key={index}>
+                      <h1>{notice.class}</h1>{" "}
+                      {/* Render the class name as a heading */}
+                      <table border="1">
+                        <thead>
+                          <tr>
+                            <th>Registration Number</th>
+                            <th>Name</th>
+                            <th>Sign</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {notice.students.map((student, idx) => (
+                            <tr key={idx}>
+                              <td>{student.regNo}</td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  );
+                })}
+              </div>
             }
           />
         </Routes>
