@@ -41,7 +41,7 @@ const classCapacity = {
   WAB105: [10, 4],
   //WAB107: [8, 4], → S7
   //WAB207: [13, 4], → S7
-  WAB406: [10, 4],
+  // WAB406: [10, 4],
   WAB403: [10, 4],
   WAB405: [10, 4],
   WAB305: [10, 4],
@@ -192,7 +192,7 @@ export const slots = {
 };
 
 //selecting the slot for locating the subjects to be written on that day
-const examToday = slots.F;
+const examToday = slots.E;
 
 let examsCopy = exams;
 
